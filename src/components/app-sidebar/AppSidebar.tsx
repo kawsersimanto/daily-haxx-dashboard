@@ -1,5 +1,6 @@
 "use client";
 
+import { AppUser } from "@/components/app-user/AppUser";
 import {
   Collapsible,
   CollapsibleContent,
@@ -35,8 +36,14 @@ export const AppSidebar = () => {
     );
   };
 
+  const user = {
+    name: "shadcn",
+    email: "m@example.com",
+    avatar: "/avatars/shadcn.jpg",
+  };
+
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <SidebarHeader>
         <div className="flex items-center gap-2 px-2 py-2">
           <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
@@ -102,11 +109,7 @@ export const AppSidebar = () => {
       </SidebarContent>
 
       <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg">Account</SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <AppUser user={user} />
       </SidebarFooter>
     </Sidebar>
   );
