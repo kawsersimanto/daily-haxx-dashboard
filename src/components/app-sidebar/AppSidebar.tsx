@@ -43,7 +43,7 @@ export const AppSidebar = () => {
   };
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar>
       <SidebarHeader>
         <div className="flex items-center gap-2 px-2 py-2">
           <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
