@@ -1,5 +1,4 @@
 import { QueryClient } from "@/providers/QueryClient";
-import { ThemeProvider } from "@/providers/theme-provider";
 import { getDefaultMetadata } from "@/utils/seo";
 import type { Metadata } from "next";
 import { Space_Grotesk, Work_Sans } from "next/font/google";
@@ -27,9 +26,7 @@ export default function RootLayout({
       <body
         className={`${workSans.variable} ${spaceGrotesk.variable} antialiased`}
       >
-        <ThemeProvider>
-          <QueryClient>{children}</QueryClient>
-        </ThemeProvider>
+        <QueryClient>{children}</QueryClient>
       </body>
     </html>
   );
