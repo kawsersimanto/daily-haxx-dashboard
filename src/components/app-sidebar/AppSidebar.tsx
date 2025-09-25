@@ -12,7 +12,6 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -23,6 +22,7 @@ import {
 } from "@/components/ui/sidebar";
 import { sidebarMenu } from "@/constants/sidebarMenu";
 import { ChevronDown, ChevronRight, Package } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
 export const AppSidebar = () => {
@@ -58,7 +58,6 @@ export const AppSidebar = () => {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Platform</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {sidebarMenu.map((item) => (
@@ -84,9 +83,9 @@ export const AppSidebar = () => {
                           {item.items.map((subItem) => (
                             <SidebarMenuSubItem key={subItem.title}>
                               <SidebarMenuSubButton asChild>
-                                <a href={subItem.url}>
+                                <Link href={subItem.url}>
                                   <span>{subItem.title}</span>
-                                </a>
+                                </Link>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
                           ))}
@@ -95,10 +94,10 @@ export const AppSidebar = () => {
                     </Collapsible>
                   ) : (
                     <SidebarMenuButton tooltip={item.title} asChild>
-                      <a href={item.url}>
+                      <Link href={item.url}>
                         <item.icon />
                         <span>{item.title}</span>
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
                   )}
                 </SidebarMenuItem>
