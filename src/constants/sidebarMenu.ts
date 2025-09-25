@@ -1,8 +1,8 @@
-import { SmartHome } from "@/components/icons/SmartHome";
 import {
   BarChart3,
   CreditCard,
   FileText,
+  LayoutDashboard,
   Package,
   ShoppingCart,
   Truck,
@@ -12,8 +12,8 @@ import {
 export const sidebarMenu = [
   {
     title: "Dashboard",
-    icon: SmartHome,
-    url: "#",
+    icon: LayoutDashboard,
+    url: "/",
   },
   {
     title: "Analytics",

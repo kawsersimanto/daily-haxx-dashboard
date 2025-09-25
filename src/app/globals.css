@@ -53,6 +53,8 @@
   --pale-red: #fff2ee;
   --ash-gray: #aeaeae;
 
+  --primary-100: #f5f5f5;
+
   /* toggle switch shadow */
   --toggle-active-color: #f2c748;
   --toggle-switch-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04),
@@ -237,6 +239,7 @@
   --color-toggle-active-color: var(--toggle-active-color);
   --color-pale-red: var(--pale-red);
   --color-ash-gray: var(--ash-gray);
+  --color-primary-100: var(--primary-100);
 
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
