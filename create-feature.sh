@@ -19,11 +19,9 @@ for arg in "$@"; do
   components="$base/components"
   hooks="$base/hooks"
   store="$base/store"
-  schema="$base/schema"
-  mocks="$base/mocks"
 
   # Create folder structure
-  mkdir -p "$components" "$hooks" "$store" "$schema" "$mocks"
+  mkdir -p "$components" "$hooks" "$store"
 
   # --- Create Files ---
 
@@ -34,8 +32,8 @@ export const ${FeaturePascal}Constants = {
 };
 EOF
 
-  ## Schema (Zod validation)
-  cat <<EOF > "$schema/${feature}Schema.ts"
+  ## Schema (Zod validation) in schema.ts
+  cat <<EOF > "$base/schema.ts"
 import { z } from "zod";
 
 export const ${FeaturePascal}Schema = z.object({
@@ -44,22 +42,6 @@ export const ${FeaturePascal}Schema = z.object({
 });
 
 export type ${FeaturePascal}SchemaType = z.infer<typeof ${FeaturePascal}Schema>;
-EOF
-
-  ## Mock data
-  cat <<EOF > "$mocks/${feature}.mock.ts"
-import { ${FeaturePascal} } from "../types";
-
-export const mock${FeaturePascal}s: ${FeaturePascal}[] = [
-  {
-    id: "1",
-    // sample fields
-  },
-  {
-    id: "2",
-    // sample fields
-  },
-];
 EOF
 
   ## Component (arrow function, named export)
@@ -104,24 +86,10 @@ export interface ${FeaturePascal} {
 }
 EOF
 
-  # --- Barrels ---
-
   ## Components barrel
   cat <<EOF > "$components/index.ts"
 export * from "./${FeaturePascal}Card";
 EOF
 
-  ## Feature barrel (includes mocks + schema)
-  cat <<EOF > "$base/index.ts"
-export * from "./constants";
-export * from "./schema/${feature}Schema";
-export * from "./api";
-export * from "./types";
-export * from "./mocks/${feature}.mock";
-export * from "./hooks/use${FeaturePascal}";
-export * from "./store/${feature}Store";
-export * from "./components";
-EOF
-
-  echo "Feature '$feature' structure created successfully with constants, schema, mocks, and arrow functions."
+  echo "Feature '$feature' structure created successfully with constants, schema, components, hooks, store, and API."
 done
