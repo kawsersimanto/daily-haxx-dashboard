@@ -21,7 +21,8 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { sidebarMenu } from "@/constants/sidebarMenu";
-import { ChevronDown, ChevronRight, Package } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -43,20 +44,20 @@ export const AppSidebar = () => {
   };
 
   return (
-    <Sidebar>
-      <SidebarHeader>
-        <div className="flex items-center gap-2 px-2 py-2">
-          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-            <Package className="size-4" />
-          </div>
-          <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-semibold">Acme Inc</span>
-            <span className="truncate text-xs">Enterprise</span>
-          </div>
-        </div>
+    <Sidebar className="shadow-[0_10px_30px_0_rgba(38,3,71,0.06)]">
+      <SidebarHeader className="py-4 md:px-5 px-1">
+        <Link href="/" className="flex items-center justify-center">
+          <Image
+            src="/logo.svg"
+            width={150}
+            height={50}
+            className="md:w-[150px] md:h-[50px] w-[150px] h-auto object-contain"
+            alt={`${process.env.NEXT_PUBLIC_APP_NAME}`}
+          />
+        </Link>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="md:px-5 px-1">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -117,7 +118,7 @@ export const AppSidebar = () => {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter>
+      <SidebarFooter className="md:px-5 px-1">
         <AppUser user={user} />
       </SidebarFooter>
     </Sidebar>
