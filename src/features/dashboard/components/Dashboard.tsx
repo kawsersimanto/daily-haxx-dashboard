@@ -1,3 +1,3 @@
 export const Dashboard = () => {
-  return <section className="p-10">Dashboard</section>;
+  return <section className="pt-6.5">Dashboard</section>;
 };

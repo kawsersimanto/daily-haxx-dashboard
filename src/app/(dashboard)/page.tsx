@@ -4,10 +4,7 @@ import { Dashboard } from "@/features/dashboard/components/Dashboard";
 const DashboardPage = () => {
   return (
     <>
-      <div className="bg-white py-6 md:px-10 px-5 shadow-[0_5px_20px_0_rgba(38,3,71,0.06)]">
-        <h2>Dashboard</h2>
-      </div>
-      <div>
+      <div className="p-5">
         <Breadcrumbs
           manual={[
             { label: "Dashboard", href: "/" },
