@@ -86,10 +86,5 @@ export interface ${FeaturePascal} {
 }
 EOF
 
-  ## Components barrel
-  cat <<EOF > "$components/index.ts"
-export * from "./${FeaturePascal}Card";
-EOF
-
   echo "Feature '$feature' structure created successfully with constants, schema, components, hooks, store, and API."
 done
