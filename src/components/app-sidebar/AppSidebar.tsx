@@ -68,14 +68,20 @@ export const AppSidebar = () => {
                       onOpenChange={() => toggleItem(item.title)}
                     >
                       <CollapsibleTrigger asChild>
-                        <SidebarMenuButton tooltip={item.title}>
-                          <item.icon />
-                          <span>{item.title}</span>
-                          {openItems.includes(item.title) ? (
-                            <ChevronDown className="ml-auto size-4" />
-                          ) : (
-                            <ChevronRight className="ml-auto size-4" />
-                          )}
+                        <SidebarMenuButton
+                          tooltip={item.title}
+                          className="[&>svg:first-child]:size-5"
+                          asChild
+                        >
+                          <Link href="/" className="h-auto">
+                            <item.icon />
+                            <span>{item.title}</span>
+                            {openItems.includes(item.title) ? (
+                              <ChevronDown className="ml-auto size-4" />
+                            ) : (
+                              <ChevronRight className="ml-auto size-4" />
+                            )}
+                          </Link>
                         </SidebarMenuButton>
                       </CollapsibleTrigger>
                       <CollapsibleContent>
@@ -93,8 +99,12 @@ export const AppSidebar = () => {
                       </CollapsibleContent>
                     </Collapsible>
                   ) : (
-                    <SidebarMenuButton tooltip={item.title} asChild>
-                      <Link href={item.url}>
+                    <SidebarMenuButton
+                      tooltip={item.title}
+                      className="[&>svg:first-child]:size-5"
+                      asChild
+                    >
+                      <Link href={item.url} className="h-auto">
                         <item.icon />
                         <span>{item.title}</span>
                       </Link>
