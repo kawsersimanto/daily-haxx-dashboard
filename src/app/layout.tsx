@@ -1,4 +1,4 @@
-import { QueryClient } from "@/providers/QueryClient";
+import { ReduxProvider } from "@/providers/ReduxProvider";
 import { getDefaultMetadata } from "@/utils/seo";
 import type { Metadata } from "next";
 import { Space_Grotesk, Work_Sans } from "next/font/google";
@@ -26,7 +26,7 @@ export default function RootLayout({
       <body
         className={`${workSans.variable} ${spaceGrotesk.variable} antialiased`}
       >
-        <QueryClient>{children}</QueryClient>
+        <ReduxProvider>{children}</ReduxProvider>
       </body>
     </html>
   );
