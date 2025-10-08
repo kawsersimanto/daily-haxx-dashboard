@@ -59,14 +59,17 @@ export const Breadcrumbs = ({ fallback = {}, manual }: BreadcrumbsProps) => {
                   <BreadcrumbItem>
                     {item.href && !isLast ? (
                       <BreadcrumbLink asChild>
-                        <Link href={item.href}>{item.label}</Link>
+                        <Link href={item.href} className="capitalize">
+                          {item.label}
+                        </Link>
                       </BreadcrumbLink>
                     ) : (
-                      <BreadcrumbPage>{item.label}</BreadcrumbPage>
+                      <BreadcrumbPage className="capitalize">
+                        {item.label}
+                      </BreadcrumbPage>
                     )}
                   </BreadcrumbItem>
 
-                  {/* Separator outside the li to avoid nested li */}
                   {!isLast && <BreadcrumbSeparator />}
                 </React.Fragment>
               );

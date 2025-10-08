@@ -84,7 +84,7 @@ export const AppSidebar = () => {
                             className={cn(
                               "[&>svg:first-child]:size-5 md:p-3 p-2",
                               isParentActive
-                                ? "bg-primary-100 text-black"
+                                ? "bg-primary-100 text-primary"
                                 : "text-muted-foreground hover:bg-muted"
                             )}
                             asChild
@@ -115,11 +115,13 @@ export const AppSidebar = () => {
                                       className={cn(
                                         "text-base",
                                         isSubActive
-                                          ? "text-primary font-semibold"
+                                          ? "!text-primary font-medium"
                                           : "text-muted-foreground hover:text-foreground"
                                       )}
                                     >
-                                      <span>{subItem.title}</span>
+                                      <span className="text-inherit">
+                                        {subItem.title}
+                                      </span>
                                     </Link>
                                   </SidebarMenuSubButton>
                                 </SidebarMenuSubItem>

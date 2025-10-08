@@ -18,7 +18,7 @@ const DashboardLayout = ({
       }
     >
       <AppSidebar />
-      <main className="grow">{children}</main>
+      <main className="grow p-5">{children}</main>
     </SidebarProvider>
   );
 };
