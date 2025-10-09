@@ -164,12 +164,7 @@ export const CategoryTable = ({ data }: { data: IArticleCategory[] }) => {
         </InputGroup>
 
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            onClick={handleDeleteSelected}
-            size="sm"
-            asChild
-          >
+          <Button variant="outline" size="sm" asChild>
             <Link href="/articles/categories/create">
               <PlusCircle />
               Add Category
