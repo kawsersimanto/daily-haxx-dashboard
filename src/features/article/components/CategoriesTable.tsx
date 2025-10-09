@@ -25,8 +25,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { IArticleCategory } from "@/features/article/article.interface";
+import { useDeleteCategoryMutation } from "@/features/article/articleCategory.api";
+import { ApiResponse } from "@/types/api";
 import { formatDate } from "@/utils/date";
 import { handleExportCsv } from "@/utils/exportToCsv";
+import { handleMutationRequest } from "@/utils/handleMutationRequest";
 import {
   flexRender,
   getCoreRowModel,
@@ -47,15 +50,22 @@ import Link from "next/link";
 import { useState } from "react";
 
 export const CategoryTable = ({ data }: { data: IArticleCategory[] }) => {
+  const [deleteCategoryFn, { isLoading: isDeleting }] =
+    useDeleteCategoryMutation();
   const [globalFilter, setGlobalFilter] = useState("");
   const [rowSelection, setRowSelection] = useState({});
 
-  const handleAction = (action: string, category: IArticleCategory) => {
+  const handleAction = async (action: string, category: IArticleCategory) => {
     switch (action) {
       case "edit":
         console.log("Edit category:", category);
         break;
       case "delete":
+        await handleMutationRequest(deleteCategoryFn, category?.id, {
+          loadingMessage: "Deleting category...",
+          successMessage: (res: ApiResponse<string>) =>
+            res?.message || "Category deleted successfully!",
+        });
         console.log("Delete category:", category.id);
         break;
       default:
@@ -125,6 +135,7 @@ export const CategoryTable = ({ data }: { data: IArticleCategory[] }) => {
               <Edit className="mr-2 h-4 w-4" /> Edit
             </DropdownMenuItem>
             <DropdownMenuItem
+              disabled={isDeleting}
               onClick={() => handleAction("delete", row.original)}
             >
               <Trash className="mr-2 h-4 w-4" /> Delete
