@@ -55,22 +55,12 @@ export const CategoryTable = ({ data }: { data: IArticleCategory[] }) => {
   const [globalFilter, setGlobalFilter] = useState("");
   const [rowSelection, setRowSelection] = useState({});
 
-  const handleAction = async (action: string, category: IArticleCategory) => {
-    switch (action) {
-      case "edit":
-        console.log("Edit category:", category);
-        break;
-      case "delete":
-        await handleMutationRequest(deleteCategoryFn, category?.id, {
-          loadingMessage: "Deleting category...",
-          successMessage: (res: ApiResponse<string>) =>
-            res?.message || "Category deleted successfully!",
-        });
-        console.log("Delete category:", category.id);
-        break;
-      default:
-        break;
-    }
+  const handleDelete = async (category: IArticleCategory) => {
+    await handleMutationRequest(deleteCategoryFn, category?.id, {
+      loadingMessage: "Deleting category...",
+      successMessage: (res: ApiResponse<string>) =>
+        res?.message || "Category deleted successfully!",
+    });
   };
 
   const handleDeleteSelected = () => {
@@ -129,14 +119,14 @@ export const CategoryTable = ({ data }: { data: IArticleCategory[] }) => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() => handleAction("edit", row.original)}
-            >
-              <Edit className="mr-2 h-4 w-4" /> Edit
+            <DropdownMenuItem asChild>
+              <Link href={`/articles/categories/${row.original?.id}`}>
+                <Edit className="mr-2 h-4 w-4" /> Edit
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem
               disabled={isDeleting}
-              onClick={() => handleAction("delete", row.original)}
+              onClick={() => handleDelete(row.original)}
             >
               <Trash className="mr-2 h-4 w-4" /> Delete
             </DropdownMenuItem>
