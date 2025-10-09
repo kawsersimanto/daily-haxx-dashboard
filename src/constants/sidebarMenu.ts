@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users } from "lucide-react";
+import { LayoutDashboard, LayoutList, Users } from "lucide-react";
 
 export const sidebarMenu = [
   {
@@ -7,13 +7,21 @@ export const sidebarMenu = [
     url: "/",
   },
   {
+    title: "Articles",
+    icon: LayoutList,
+    url: "#",
+    items: [
+      { title: "All Articles", url: "/articles" },
+      { title: "Add New", url: "/articles/create" },
+    ],
+  },
+  {
     title: "Users",
     icon: Users,
     url: "#",
     items: [
       { title: "All Users", url: "/users" },
       { title: "Add New", url: "/users/create" },
-      { title: "Permissions", url: "#" },
     ],
   },
 ];

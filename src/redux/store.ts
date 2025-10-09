@@ -1,4 +1,5 @@
 import { baseApi } from "@/redux/api/baseApi";
+import { articleSlice } from "@/features/article/store/article.slice";
 import { userSlice } from "@/features/user/store/user.slice";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import {
@@ -16,11 +17,12 @@ import storage from "redux-persist/lib/storage";
 const persistConfig = {
   key: "root",
   version: 1,
-  whitelist: ["user",  ],
+  whitelist: ["article", "user",  ],
   storage,
 };
 
 const rootReducer = combineReducers({
+    article: articleSlice.reducer,
     user: userSlice.reducer,
   [baseApi.reducerPath]: baseApi.reducer,
 });
