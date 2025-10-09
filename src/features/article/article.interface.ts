@@ -1,6 +1,6 @@
 import { IUser } from "@/features/user/user.interface";
 
-export interface ICategory {
+export interface IArticleCategory {
   id: string;
   name: string;
   slug: string;
@@ -20,6 +20,6 @@ export interface IArticle {
   readingTime: number;
   createdAt: string;
   updatedAt: string;
-  category: ICategory;
+  category: IArticleCategory;
   user: IUser;
 }

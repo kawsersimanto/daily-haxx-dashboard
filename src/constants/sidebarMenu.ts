@@ -13,6 +13,7 @@ export const sidebarMenu = [
     items: [
       { title: "All Articles", url: "/articles" },
       { title: "Add New", url: "/articles/create" },
+      { title: "Categories", url: "/articles/categories" },
     ],
   },
   {
