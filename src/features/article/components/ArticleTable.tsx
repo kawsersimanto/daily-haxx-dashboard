@@ -36,8 +36,17 @@ import {
   useReactTable,
   type ColumnDef,
 } from "@tanstack/react-table";
-import { Edit, EyeIcon, MoreHorizontal, Search, Trash } from "lucide-react";
+import {
+  Download,
+  Edit,
+  EyeIcon,
+  MoreHorizontal,
+  PlusCircle,
+  Search,
+  Trash,
+} from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -130,9 +139,15 @@ export const ArticleTable = ({ data }: { data: IArticle[] }) => {
       },
     },
     {
-      accessorFn: (row) => `${row.user?.firstName} ${row.user?.lastName}`,
       id: "author",
       header: "Author",
+      cell: ({ row }) => {
+        return (
+          <Badge variant={"secondary"}>
+            {row.original?.user?.firstName} {row.original?.user?.lastName}
+          </Badge>
+        );
+      },
     },
     {
       accessorKey: "createdAt",
@@ -219,8 +234,16 @@ export const ArticleTable = ({ data }: { data: IArticle[] }) => {
           </InputGroupAddon>
         </InputGroup>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={handleDeleteSelected} size="sm">
-            Delete Selected
+          <Button
+            variant="outline"
+            onClick={handleDeleteSelected}
+            size="sm"
+            asChild
+          >
+            <Link href="/articles/create">
+              <PlusCircle />
+              Add User
+            </Link>
           </Button>
           <DataTableViewOptions table={table} />
           <Button
@@ -228,6 +251,7 @@ export const ArticleTable = ({ data }: { data: IArticle[] }) => {
             onClick={() => handleExportCsv(table, "articles.csv")}
             size="sm"
           >
+            <Download />
             Export
           </Button>
           {selectedCount > 0 && (
