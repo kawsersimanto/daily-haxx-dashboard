@@ -44,13 +44,28 @@ import {
   Search,
   Trash,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export const UsersTable = ({ data }: { data: IUser[] }) => {
+  const router = useRouter();
   const [globalFilter, setGlobalFilter] = useState("");
   const [rowSelection, setRowSelection] = useState({});
 
   const handleAction = (action: string, user: IUser) => {
+    switch (action) {
+      case "preview":
+        router.push(`/users/${user?.id}`);
+        break;
+      case "block":
+        console.log("block");
+        break;
+      case "delete":
+        console.log("delete");
+        break;
+      default:
+        break;
+    }
     console.log(`[v0] ${action} user:`, user.id);
   };
 

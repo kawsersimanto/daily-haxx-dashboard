@@ -6,10 +6,10 @@ const UsersLayout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <>
+    <div>
       <Breadcrumbs />
-      {children}
-    </>
+      <div className="pt-10">{children}</div>
+    </div>
   );
 };
 
