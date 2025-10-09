@@ -37,6 +37,7 @@ import {
   type ColumnDef,
 } from "@tanstack/react-table";
 import {
+  Clock,
   Download,
   Edit,
   EyeIcon,
@@ -134,7 +135,10 @@ export const ArticleTable = ({ data }: { data: IArticle[] }) => {
       header: "Reading Time",
       cell: ({ row }) => {
         return (
-          <Badge variant={"outline"}>{row.original.readingTime} min</Badge>
+          <Badge variant={"outline"}>
+            <Clock />
+            {row.original.readingTime} min
+          </Badge>
         );
       },
     },
