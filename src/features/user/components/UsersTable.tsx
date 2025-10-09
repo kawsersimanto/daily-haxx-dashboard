@@ -1,5 +1,6 @@
 "use client";
 
+import { DataTableColumnHeader } from "@/components/data-table-column-header/DataTableColumnHeader";
 import { DataTablePagination } from "@/components/data-table-pagination/DataTablePagination";
 import { DataTableViewOptions } from "@/components/data-table-view-options/DataTableViewOptions";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +26,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { IUser } from "@/features/user/user.interface";
+import { handleExportCsv } from "@/utils/exportToCsv";
 import {
   flexRender,
   getCoreRowModel,
@@ -35,6 +37,7 @@ import {
 } from "@tanstack/react-table";
 import {
   Ban,
+  Download,
   EyeIcon,
   MoreHorizontal,
   PlusCircle,
@@ -80,7 +83,9 @@ export const UsersTable = ({ data }: { data: IUser[] }) => {
     {
       accessorFn: (row) => `${row.firstName} ${row.lastName}`,
       id: "name",
-      header: "Name",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Name" />
+      ),
       cell: ({ row }) => `${row.original.firstName} ${row.original.lastName}`,
     },
     {
@@ -188,7 +193,7 @@ export const UsersTable = ({ data }: { data: IUser[] }) => {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-2 justify-between">
-        <InputGroup className="max-w-[400px]">
+        <InputGroup className="max-w-[300px]">
           <InputGroupInput
             placeholder="Search"
             value={globalFilter ?? ""}
@@ -204,6 +209,14 @@ export const UsersTable = ({ data }: { data: IUser[] }) => {
             Add User
           </Button>
           <DataTableViewOptions table={table} />
+          <Button
+            variant="outline"
+            onClick={() => handleExportCsv(table, "users.csv")}
+            size="sm"
+          >
+            <Download />
+            Export
+          </Button>
           {selectedCount > 0 && (
             <Button variant="destructive" onClick={handleDeleteSelected}>
               Delete ({selectedCount})
