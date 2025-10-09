@@ -12,7 +12,7 @@ export const sidebarMenu = [
     url: "#",
     items: [
       { title: "All Users", url: "/users" },
-      { title: "Roles", url: "#" },
+      { title: "Add New", url: "/users/create" },
       { title: "Permissions", url: "#" },
     ],
   },

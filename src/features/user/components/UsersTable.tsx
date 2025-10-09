@@ -44,6 +44,7 @@ import {
   Search,
   Trash,
 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -223,9 +224,16 @@ export const UsersTable = ({ data }: { data: IUser[] }) => {
           </InputGroupAddon>
         </InputGroup>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={handleDeleteSelected} size="sm">
-            <PlusCircle />
-            Add User
+          <Button
+            variant="outline"
+            onClick={handleDeleteSelected}
+            size="sm"
+            asChild
+          >
+            <Link href="/users/create">
+              <PlusCircle />
+              Add User
+            </Link>
           </Button>
           <DataTableViewOptions table={table} />
           <Button
