@@ -242,7 +242,7 @@ export const ArticleTable = ({ data }: { data: IArticle[] }) => {
           >
             <Link href="/articles/create">
               <PlusCircle />
-              Add User
+              Add Article
             </Link>
           </Button>
           <DataTableViewOptions table={table} />
@@ -255,7 +255,11 @@ export const ArticleTable = ({ data }: { data: IArticle[] }) => {
             Export
           </Button>
           {selectedCount > 0 && (
-            <Button variant="destructive" onClick={handleDeleteSelected}>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteSelected}
+              size="sm"
+            >
               Delete ({selectedCount})
             </Button>
           )}

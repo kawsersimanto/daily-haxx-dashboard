@@ -1,4 +1,5 @@
 import { baseApi } from "@/redux/api/baseApi";
+import { ApiResponse } from "@/types/api";
 import { IArticle } from "./article.interface";
 
 export const articleApi = baseApi.injectEndpoints({
@@ -9,6 +10,9 @@ export const articleApi = baseApi.injectEndpoints({
     }),
     getArticleById: builder.query<IArticle, string>({
       query: (id) => `/articles/${id}`,
+    }),
+    getArticleBySlug: builder.query<ApiResponse<IArticle>, string>({
+      query: (slug) => `/articles/slug/${slug}`,
     }),
     createArticle: builder.mutation<IArticle, Partial<IArticle>>({
       query: (body) => ({ url: "/articles", method: "POST", body }),
@@ -32,6 +36,7 @@ export const articleApi = baseApi.injectEndpoints({
 export const {
   useGetArticlesQuery,
   useGetArticleByIdQuery,
+  useGetArticleBySlugQuery,
   useCreateArticleMutation,
   useUpdateArticleMutation,
   useDeleteArticleMutation,

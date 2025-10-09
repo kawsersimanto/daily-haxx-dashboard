@@ -240,7 +240,11 @@ export const UsersTable = ({ data }: { data: IUser[] }) => {
             Export
           </Button>
           {selectedCount > 0 && (
-            <Button variant="destructive" onClick={handleDeleteSelected}>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteSelected}
+              size="sm"
+            >
               Delete ({selectedCount})
             </Button>
           )}

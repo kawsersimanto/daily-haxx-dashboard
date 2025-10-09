@@ -10,7 +10,6 @@ const ArticlePage = () => {
     useGetArticlesQuery<
       ApiResponse<{ meta: ApiMeta; data: { data: IArticle[] } }>
     >();
-
   const articles = data?.data?.data || [];
 
   return (
