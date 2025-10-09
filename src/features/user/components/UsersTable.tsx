@@ -103,7 +103,11 @@ export const UsersTable = ({ data }: { data: IUser[] }) => {
     {
       accessorKey: "role",
       header: "Role",
-      cell: ({ row }) => <Badge variant="outline">{row.original.role}</Badge>,
+      cell: ({ row }) => (
+        <Badge variant="outline" className="bg-slate-200">
+          {row.original.role}
+        </Badge>
+      ),
     },
     {
       accessorKey: "status",
