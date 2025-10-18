@@ -238,12 +238,7 @@ export const ArticleTable = ({ data }: { data: IArticle[] }) => {
           </InputGroupAddon>
         </InputGroup>
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            onClick={handleDeleteSelected}
-            size="sm"
-            asChild
-          >
+          <Button variant="outline" size="sm" asChild>
             <Link href="/articles/create">
               <PlusCircle />
               Add Article

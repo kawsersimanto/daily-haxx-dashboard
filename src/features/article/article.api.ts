@@ -4,8 +4,11 @@ import { IArticle } from "./article.interface";
 
 export const articleApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getArticles: builder.query<IArticle[], void>({
-      query: () => "/articles",
+    getArticles: builder.query<
+      { data: IArticle[]; total: number },
+      { page: number; limit: number }
+    >({
+      query: ({ page, limit }) => `/articles?page=${page}&limit=${limit}`,
       providesTags: ["articles"],
     }),
     getArticleById: builder.query<IArticle, string>({
