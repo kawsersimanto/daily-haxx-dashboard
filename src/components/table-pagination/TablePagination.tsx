@@ -12,6 +12,8 @@ interface PaginationProps {
   page: number;
   limit: number;
   total: number;
+  visibleCount: number;
+  totalPages: number;
   onPageChange: (page: number) => void;
   onPageSizeChange: (limit: number) => void;
 }
@@ -22,15 +24,15 @@ export const TablePagination = ({
   total,
   onPageChange,
   onPageSizeChange,
+  totalPages,
+  visibleCount,
 }: PaginationProps) => {
-  const totalPages = Math.ceil(total / limit);
-  const start = (page - 1) * limit + 1;
-  const end = Math.min(page * limit, total);
+  const resultWord = total === 1 ? "result" : "results";
 
   return (
     <div className="flex items-center justify-between">
       <div className="text-sm text-muted-foreground">
-        Showing {start} to {end} of {total} results
+        Showing {visibleCount || 0} of {total} {resultWord}
       </div>
 
       <div className="flex items-center gap-2">

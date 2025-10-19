@@ -27,17 +27,19 @@ import { Download, Search, Trash } from "lucide-react";
 import { useState } from "react";
 import { TablePagination } from "../table-pagination/TablePagination";
 
-export interface MainTableProps<T extends { id: string }> {
+export interface DataTableProps<T extends { id: string }> {
   data: T[];
   columns: ColumnDef<T>[];
   total: number;
   page: number;
   limit: number;
+  totalPages: number;
   onPageChange: (page: number) => void;
   onPageSizeChange: (limit: number) => void;
   csvFileName?: string;
   onDeleteSelected?: (rows: T[], ids: string[]) => void;
   isLoading?: boolean;
+  renderActions?: () => React.ReactNode;
 }
 
 export const DataTable = <T extends { id: string }>({
@@ -50,7 +52,9 @@ export const DataTable = <T extends { id: string }>({
   onPageSizeChange,
   csvFileName = "data.csv",
   onDeleteSelected,
-}: MainTableProps<T>) => {
+  totalPages,
+  renderActions,
+}: DataTableProps<T>) => {
   const [globalFilter, setGlobalFilter] = useState("");
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
 
@@ -59,7 +63,7 @@ export const DataTable = <T extends { id: string }>({
     columns,
     getCoreRowModel: getCoreRowModel<T>(),
     getFilteredRowModel: getFilteredRowModel<T>(),
-    manualPagination: true, // ✅ server-side pagination mode
+    manualPagination: true,
     pageCount: Math.ceil(total / limit),
     onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
@@ -73,6 +77,8 @@ export const DataTable = <T extends { id: string }>({
       },
     },
   });
+
+  const visibleCount = table.getRowModel().rows.length;
 
   const selectedRows = table.getFilteredSelectedRowModel().rows;
   const selectedCount = selectedRows.length;
@@ -99,6 +105,7 @@ export const DataTable = <T extends { id: string }>({
         </InputGroup>
 
         <div className="flex items-center gap-2">
+          {renderActions?.()}
           <DataTableViewOptions table={table} />
           <Button
             variant="outline"
@@ -164,14 +171,14 @@ export const DataTable = <T extends { id: string }>({
         </Table>
       </div>
 
-      {/* <DataTablePagination table={table} />
-       */}
       <TablePagination
         page={page}
         limit={limit}
         total={total}
         onPageChange={onPageChange}
         onPageSizeChange={onPageSizeChange}
+        visibleCount={visibleCount}
+        totalPages={totalPages}
       />
     </div>
   );

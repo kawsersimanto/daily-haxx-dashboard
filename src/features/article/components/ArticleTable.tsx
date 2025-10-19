@@ -13,7 +13,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { formatDate } from "@/utils/date";
 import { ColumnDef } from "@tanstack/react-table";
-import { Clock, Edit, EyeIcon, MoreHorizontal, Trash } from "lucide-react";
+import {
+  Clock,
+  Edit,
+  EyeIcon,
+  MoreHorizontal,
+  PlusCircle,
+  Trash,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -26,7 +33,8 @@ export const ArticleTable = () => {
   const { data } = useGetArticlesQuery({ page, limit });
 
   const articles = data?.data?.data || [];
-  const total = data?.data?.meta?.totalPage ?? 0;
+  const total = data?.data?.meta?.total ?? 0;
+  const totalPages = data?.data?.meta?.totalPage ?? 0;
 
   const handleDelete = (article: IArticle) => {
     console.log("delete article:", article.id);
@@ -153,12 +161,20 @@ export const ArticleTable = () => {
       total={total}
       page={page}
       limit={limit}
+      totalPages={totalPages}
       onPageChange={setPage}
       onDeleteSelected={handleDeleteMany}
       onPageSizeChange={(newLimit) => {
         setLimit(newLimit);
         setPage(1);
       }}
+      renderActions={() => (
+        <Button variant="outline" size="sm" asChild>
+          <Link href="/articles/create">
+            <PlusCircle /> Add New
+          </Link>
+        </Button>
+      )}
     />
   );
 };
