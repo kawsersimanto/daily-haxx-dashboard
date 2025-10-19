@@ -1,5 +1,6 @@
 "use client";
 
+import { ImageUploader } from "@/components/image-uploader/ImageUploader";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -62,6 +63,26 @@ export const ArticleForm = () => {
                 <Input placeholder="Tedex Pharmacy" type="text" {...field} />
               </FormControl>
 
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="coverImage"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Profile Picture</FormLabel>
+              <FormControl>
+                <ImageUploader
+                  value={field.value}
+                  onChange={field.onChange}
+                  onUploadComplete={(url) => {
+                    console.log("Uploaded image URL:", url);
+                  }}
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
