@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Table } from "@tanstack/react-table";
-import { Filter } from "lucide-react";
+import { SlidersHorizontal } from "lucide-react";
 
 interface FilterOption {
   label: string;
@@ -58,8 +58,8 @@ export function TableFilters<TData>({ table }: { table: Table<TData> }) {
         return (
           <DropdownMenu key={col.id}>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <Filter />
+              <Button variant="outline" size="sm" className="capitalize">
+                <SlidersHorizontal />
                 {(col.columnDef.meta as ExtendedColumnMeta)?.filterLabel ||
                   col.id}
               </Button>

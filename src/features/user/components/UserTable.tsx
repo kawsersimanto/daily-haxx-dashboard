@@ -1,7 +1,6 @@
 "use client";
 
 import { DataTableColumnHeader } from "@/components/data-table-column-header/DataTableColumnHeader";
-import { TableFilters } from "@/components/data-table-filters/DataTableFilters";
 import { DataTable } from "@/components/data-table/DataTable";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,6 +14,7 @@ import {
 import { IUser } from "@/features/user/user.interface";
 import { ApiResponse } from "@/types/api";
 import { handleMutationRequest } from "@/utils/handleMutationRequest";
+import { multiSelectFilterFn } from "@/utils/table";
 import { type ColumnDef } from "@tanstack/react-table";
 import {
   Ban,
@@ -118,10 +118,7 @@ export const UserTable = () => {
           { label: "User", value: "USER" },
         ],
       },
-      filterFn: (row, columnId, value) => {
-        if (!value || value.length === 0) return true;
-        return value.includes(row.getValue(columnId));
-      },
+      filterFn: multiSelectFilterFn,
     },
     {
       accessorKey: "isActive",
@@ -138,10 +135,7 @@ export const UserTable = () => {
           { label: "Inactive", value: false },
         ],
       },
-      filterFn: (row, columnId, value) => {
-        if (!value || value.length === 0) return true;
-        return value.includes(row.getValue(columnId));
-      },
+      filterFn: multiSelectFilterFn,
     },
     {
       accessorKey: "subscription",
@@ -212,14 +206,13 @@ export const UserTable = () => {
         setLimit(newLimit);
         setPage(1);
       }}
-      renderActions={(table) => (
+      renderActions={() => (
         <>
           <Button variant="outline" size="sm" asChild>
             <Link href="/users/create">
               <PlusCircle /> Add New
             </Link>
           </Button>
-          <TableFilters table={table} />
         </>
       )}
     />

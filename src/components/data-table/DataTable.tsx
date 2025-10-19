@@ -1,6 +1,8 @@
 "use client";
 
+import { TableFilters } from "@/components/data-table-filters/DataTableFilters";
 import { DataTableViewOptions } from "@/components/data-table-view-options/DataTableViewOptions";
+import { TablePagination } from "@/components/table-pagination/TablePagination";
 import { Button } from "@/components/ui/button";
 import {
   InputGroup,
@@ -26,7 +28,6 @@ import {
 } from "@tanstack/react-table";
 import { Download, Search, Trash } from "lucide-react";
 import { useState } from "react";
-import { TablePagination } from "../table-pagination/TablePagination";
 
 export interface DataTableProps<T extends { id: string }> {
   data: T[];
@@ -108,6 +109,7 @@ export const DataTable = <T extends { id: string }>({
 
         <div className="flex items-center gap-2">
           {renderActions?.(table)}
+          <TableFilters table={table} />
           <DataTableViewOptions table={table} />
           <Button
             variant="outline"
