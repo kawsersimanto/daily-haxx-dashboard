@@ -1,5 +1,7 @@
+import { SubscriptionTable } from "@/features/subscription/components/SubscriptionTable";
+
 const SubscriptionPage = () => {
-  return <div>Subscription table</div>;
+  return <SubscriptionTable />;
 };
 
 export default SubscriptionPage;

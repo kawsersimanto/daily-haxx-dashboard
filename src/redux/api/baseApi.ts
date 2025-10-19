@@ -21,6 +21,7 @@ export const baseApi = createApi({
     "images",
     "polls",
     "pollCategories",
+    "subscription",
   ],
   endpoints: () => ({}),
 });

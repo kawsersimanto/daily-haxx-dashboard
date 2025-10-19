@@ -27,6 +27,16 @@ export const sidebarMenu = [
     ],
   },
   {
+    title: "Subscriptions",
+    icon: ListTodo,
+    url: "#",
+    items: [
+      { title: "All Subscriptions", url: "/subscriptions" },
+      { title: "Add New", url: "/subscriptions/create" },
+      { title: "Categories", url: "/subscriptions/categories" },
+    ],
+  },
+  {
     title: "Users",
     icon: Users,
     url: "#",

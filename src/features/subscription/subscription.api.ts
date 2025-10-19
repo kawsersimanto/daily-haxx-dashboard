@@ -1,22 +1,36 @@
 import { baseApi } from "@/redux/api/baseApi";
-import { Subscription } from "./subscription.interface";
+import { ApiResponse } from "@/types/api";
+import { ISubscription } from "./subscription.interface";
 
 export const subscriptionApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getSubscriptions: builder.query<Subscription[], void>({
-      query: () => "/subscription",
+    getSubscriptions: builder.query<ApiResponse<ISubscription[], false>, void>({
+      query: () => "/subscription-plans",
+      providesTags: ["subscription"],
     }),
-    getSubscriptionById: builder.query<Subscription, string>({
-      query: (id) => `/subscription/${id}`,
+    getSubscriptionById: builder.query<ISubscription, string>({
+      query: (id) => `/subscription-plans/${id}`,
     }),
-    createSubscription: builder.mutation<Subscription, Partial<Subscription>>({
-      query: (body) => ({ url: "/subscription", method: "POST", body }),
-    }),
-    updateSubscription: builder.mutation<Subscription, Partial<Subscription> & { id: string }>(
-      { query: ({ id, ...body }) => ({ url: `/subscription/${id}`, method: "PUT", body }) }
+    createSubscription: builder.mutation<ISubscription, Partial<ISubscription>>(
+      {
+        query: (body) => ({ url: "/subscription-plans", method: "POST", body }),
+      }
     ),
-    deleteSubscription: builder.mutation<{ success: boolean; id: string }, string>({
-      query: (id) => ({ url: `/subscription/${id}`, method: "DELETE" }),
+    updateSubscription: builder.mutation<
+      ISubscription,
+      Partial<ISubscription> & { id: string }
+    >({
+      query: ({ id, ...body }) => ({
+        url: `/subscription-plans/${id}`,
+        method: "PUT",
+        body,
+      }),
+    }),
+    deleteSubscription: builder.mutation<
+      { success: boolean; id: string },
+      string
+    >({
+      query: (id) => ({ url: `/subscription-plans/${id}`, method: "DELETE" }),
     }),
   }),
 });

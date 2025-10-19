@@ -22,22 +22,29 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   useReactTable,
   type ColumnDef,
   type ColumnFiltersState,
+  type PaginationState,
 } from "@tanstack/react-table";
 import { Download, Search, Trash } from "lucide-react";
 import { useState } from "react";
+import { DataTablePagination } from "../data-table-pagination/DataTablePagination";
 
 export interface DataTableProps<T extends { id: string }> {
   data: T[];
   columns: ColumnDef<T>[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-  onPageSizeChange: (limit: number) => void;
+  // Pagination mode: 'server' or 'client'
+  paginationMode?: "server" | "client";
+  // Server-side pagination props
+  total?: number;
+  page?: number;
+  limit?: number;
+  totalPages?: number;
+  onPageChange?: (page: number) => void;
+  onPageSizeChange?: (limit: number) => void;
+  // Common props
   csvFileName?: string;
   onDeleteSelected?: (rows: T[], ids: string[]) => void;
   isLoading?: boolean;
@@ -49,19 +56,28 @@ export interface DataTableProps<T extends { id: string }> {
 export const DataTable = <T extends { id: string }>({
   data,
   columns,
+  paginationMode = "server",
   total,
-  page,
-  limit,
+  page = 1,
+  limit = 10,
+  totalPages,
   onPageChange,
   onPageSizeChange,
   csvFileName = "data.csv",
   onDeleteSelected,
-  totalPages,
   renderActions,
 }: DataTableProps<T>) => {
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
+
+  // Client-side pagination state
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: limit,
+  });
+
+  const isServerSide = paginationMode === "server";
 
   const table = useReactTable<T>({
     data,
@@ -70,8 +86,18 @@ export const DataTable = <T extends { id: string }>({
     columnResizeMode: "onChange",
     getCoreRowModel: getCoreRowModel<T>(),
     getFilteredRowModel: getFilteredRowModel<T>(),
-    manualPagination: true,
-    pageCount: Math.ceil(total / limit),
+
+    // Pagination configuration based on mode
+    ...(isServerSide
+      ? {
+          manualPagination: true,
+          pageCount: totalPages || Math.ceil((total || 0) / limit),
+        }
+      : {
+          getPaginationRowModel: getPaginationRowModel<T>(),
+          onPaginationChange: setPagination,
+        }),
+
     onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
     onColumnFiltersChange: setColumnFilters,
@@ -79,6 +105,7 @@ export const DataTable = <T extends { id: string }>({
       rowSelection,
       globalFilter,
       columnFilters,
+      ...(isServerSide ? {} : { pagination }),
     },
   });
 
@@ -93,6 +120,34 @@ export const DataTable = <T extends { id: string }>({
     const ids = rows.map((r) => r.id);
     onDeleteSelected(rows, ids);
   };
+
+  // Client-side pagination handlers
+  const handleClientPageChange = (newPage: number) => {
+    table.setPageIndex(newPage - 1);
+  };
+
+  const handleClientPageSizeChange = (newLimit: number) => {
+    table.setPageSize(newLimit);
+  };
+
+  // Determine pagination props based on mode
+  const paginationProps = isServerSide
+    ? {
+        page,
+        limit,
+        total: total || 0,
+        totalPages: totalPages || Math.ceil((total || 0) / limit),
+        onPageChange: onPageChange || (() => {}),
+        onPageSizeChange: onPageSizeChange || (() => {}),
+      }
+    : {
+        page: pagination.pageIndex + 1,
+        limit: pagination.pageSize,
+        total: table.getFilteredRowModel().rows.length,
+        totalPages: table.getPageCount(),
+        onPageChange: handleClientPageChange,
+        onPageSizeChange: handleClientPageSizeChange,
+      };
 
   return (
     <div className="flex flex-col gap-4">
@@ -184,16 +239,12 @@ export const DataTable = <T extends { id: string }>({
         </Table>
       </div>
 
-      {/* Pagination */}
-      <TablePagination
-        page={page}
-        limit={limit}
-        total={total}
-        onPageChange={onPageChange}
-        onPageSizeChange={onPageSizeChange}
-        visibleCount={visibleCount}
-        totalPages={totalPages}
-      />
+      {/* Pagination - conditionally render based on mode */}
+      {isServerSide ? (
+        <TablePagination {...paginationProps} visibleCount={visibleCount} />
+      ) : (
+        <DataTablePagination table={table} />
+      )}
     </div>
   );
 };
