@@ -22,6 +22,7 @@ import {
   getFilteredRowModel,
   useReactTable,
   type ColumnDef,
+  type ColumnFiltersState,
 } from "@tanstack/react-table";
 import { Download, Search, Trash } from "lucide-react";
 import { useState } from "react";
@@ -39,7 +40,9 @@ export interface DataTableProps<T extends { id: string }> {
   csvFileName?: string;
   onDeleteSelected?: (rows: T[], ids: string[]) => void;
   isLoading?: boolean;
-  renderActions?: () => React.ReactNode;
+  renderActions?: (
+    table: ReturnType<typeof useReactTable<T>>
+  ) => React.ReactNode;
 }
 
 export const DataTable = <T extends { id: string }>({
@@ -56,6 +59,7 @@ export const DataTable = <T extends { id: string }>({
   renderActions,
 }: DataTableProps<T>) => {
   const [globalFilter, setGlobalFilter] = useState("");
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
 
   const table = useReactTable<T>({
@@ -67,14 +71,11 @@ export const DataTable = <T extends { id: string }>({
     pageCount: Math.ceil(total / limit),
     onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
+    onColumnFiltersChange: setColumnFilters,
     state: {
       rowSelection,
       globalFilter,
-    },
-    initialState: {
-      pagination: {
-        pageSize: 10,
-      },
+      columnFilters,
     },
   });
 
@@ -92,6 +93,7 @@ export const DataTable = <T extends { id: string }>({
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Toolbar */}
       <div className="flex items-center gap-2 justify-between">
         <InputGroup className="max-w-[300px]">
           <InputGroupInput
@@ -105,7 +107,7 @@ export const DataTable = <T extends { id: string }>({
         </InputGroup>
 
         <div className="flex items-center gap-2">
-          {renderActions?.()}
+          {renderActions?.(table)}
           <DataTableViewOptions table={table} />
           <Button
             variant="outline"
@@ -124,6 +126,7 @@ export const DataTable = <T extends { id: string }>({
         </div>
       </div>
 
+      {/* Table */}
       <div className="rounded-md border bg-white">
         <Table>
           <TableHeader>
@@ -171,6 +174,7 @@ export const DataTable = <T extends { id: string }>({
         </Table>
       </div>
 
+      {/* Pagination */}
       <TablePagination
         page={page}
         limit={limit}

@@ -1,6 +1,7 @@
 "use client";
 
 import { DataTableColumnHeader } from "@/components/data-table-column-header/DataTableColumnHeader";
+import { TableFilters } from "@/components/data-table-filters/DataTableFilters";
 import { DataTable } from "@/components/data-table/DataTable";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,14 +16,26 @@ import { IUser } from "@/features/user/user.interface";
 import { ApiResponse } from "@/types/api";
 import { handleMutationRequest } from "@/utils/handleMutationRequest";
 import { type ColumnDef } from "@tanstack/react-table";
-import { Ban, EyeIcon, MoreHorizontal, PlusCircle, Trash } from "lucide-react";
+import {
+  Ban,
+  EyeIcon,
+  MoreHorizontal,
+  PlusCircle,
+  Trash,
+  Unlock,
+} from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { useDeleteUserMutation, useGetUsersQuery } from "../user.api";
+import {
+  useDeleteUserMutation,
+  useGetUsersQuery,
+  useUpdateUserMutation,
+} from "../user.api";
 
 export const UserTable = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
+  const [updateUserFn, { isLoading: isUpdatingUser }] = useUpdateUserMutation();
   const { data } = useGetUsersQuery({ page, limit });
   const users = data?.data?.data || [];
   const [deleteUserFn] = useDeleteUserMutation();
@@ -30,8 +43,20 @@ export const UserTable = () => {
   const total = data?.data?.meta?.total ?? 0;
   const totalPages = data?.data?.meta?.totalPages ?? 0;
 
-  const handleBlock = (user: IUser) => {
-    console.log(user?.id);
+  const handleToggleActive = async (user: IUser) => {
+    const newStatus = !user.isActive;
+
+    await handleMutationRequest(
+      updateUserFn,
+      { id: user.id, isActive: newStatus },
+      {
+        loadingMessage: newStatus ? "Unblocking user..." : "Blocking user...",
+        successMessage: () =>
+          newStatus
+            ? "User unblocked successfully!"
+            : "User blocked successfully!",
+      }
+    );
   };
 
   const handleDelete = async (user: IUser) => {
@@ -87,15 +112,35 @@ export const UserTable = () => {
           {row.original.role}
         </Badge>
       ),
+      meta: {
+        filterOptions: [
+          { label: "Admin", value: "ADMIN" },
+          { label: "User", value: "USER" },
+        ],
+      },
+      filterFn: (row, columnId, value) => {
+        if (!value) return true;
+        return row.getValue(columnId) === value;
+      },
     },
     {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => (
-        <Badge variant={row.original.isActive ? "default" : "secondary"}>
+        <Badge variant={row.original.isActive ? "default" : "destructive"}>
           {row.original.isActive ? "Active" : "Inactive"}
         </Badge>
       ),
+      meta: {
+        filterOptions: [
+          { label: "Active", value: true },
+          { label: "Inactive", value: false },
+        ],
+      },
+      filterFn: (row, columnId, value) => {
+        if (value) return true;
+        return String(row.getValue(columnId)) === value;
+      },
     },
     {
       accessorKey: "subscription",
@@ -124,8 +169,19 @@ export const UserTable = () => {
                 Preview
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleBlock(row.original)}>
-              <Ban className="text-inherit" /> Block
+            <DropdownMenuItem
+              onClick={() => handleToggleActive(row.original)}
+              disabled={isUpdatingUser}
+            >
+              {row.original.isActive ? (
+                <>
+                  <Ban className="text-inherit" /> Block
+                </>
+              ) : (
+                <>
+                  <Unlock className="text-inherit" /> Unblock
+                </>
+              )}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleDelete(row.original)}>
               <Trash className="text-inherit" />
@@ -155,12 +211,15 @@ export const UserTable = () => {
         setLimit(newLimit);
         setPage(1);
       }}
-      renderActions={() => (
-        <Button variant="outline" size="sm" asChild>
-          <Link href="/users/create">
-            <PlusCircle /> Add New
-          </Link>
-        </Button>
+      renderActions={(table) => (
+        <>
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/users/create">
+              <PlusCircle /> Add New
+            </Link>
+          </Button>
+          <TableFilters table={table} />
+        </>
       )}
     />
   );
