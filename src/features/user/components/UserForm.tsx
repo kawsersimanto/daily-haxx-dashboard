@@ -1,5 +1,6 @@
 "use client";
 import { FormVisualizer } from "@/components/form-visualizer/FormVisualizer";
+import { LocationSelector } from "@/components/location-selector/LocationSelector";
 import { PhoneInput } from "@/components/phone-input/PhoneInput";
 import { Button } from "@/components/ui/button";
 import {
@@ -76,16 +77,12 @@ export const UserForm = () => {
           <div className="col-span-6">
             <FormField
               control={form.control}
-              name="email"
+              name="lastName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>Last Name</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="johndoe@gmail.com"
-                      type="email"
-                      {...field}
-                    />
+                    <Input placeholder="Doe" type="text" {...field} />
                   </FormControl>
 
                   <FormMessage />
@@ -99,12 +96,16 @@ export const UserForm = () => {
           <div className="col-span-6">
             <FormField
               control={form.control}
-              name="lastName"
+              name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Last Name</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="Doe" type="text" {...field} />
+                    <Input
+                      placeholder="johndoe@gmail.com"
+                      type="email"
+                      {...field}
+                    />
                   </FormControl>
 
                   <FormMessage />
@@ -180,9 +181,12 @@ export const UserForm = () => {
                 <FormItem>
                   <FormLabel>Country</FormLabel>
                   <FormControl>
-                    <Input placeholder="USA" type="text" {...field} />
+                    <LocationSelector
+                      onCountryChange={(country) =>
+                        field.onChange(country ? country.name.common : "")
+                      }
+                    />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
