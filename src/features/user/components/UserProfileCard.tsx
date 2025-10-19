@@ -2,7 +2,6 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { IUser } from "@/features/user/user.interface";
 import {
@@ -16,13 +15,6 @@ import {
 import Link from "next/link";
 
 export const UserProfileCard = ({ user }: { user: IUser }) => {
-  const handleBlock = () => {
-    console.log(user?.id);
-  };
-  const handleDelete = () => {
-    console.log(user?.id);
-  };
-
   return (
     <Card className="w-full max-w-2xl">
       <CardHeader>
@@ -127,24 +119,11 @@ export const UserProfileCard = ({ user }: { user: IUser }) => {
             </div>
           </div>
         </div>
-
-        <ButtonGroup className="mt-10">
-          <ButtonGroup>
-            <Button variant="outline" size="icon" aria-label="Go Back" asChild>
-              <Link href="/users">
-                <ArrowLeftIcon />
-              </Link>
-            </Button>
-          </ButtonGroup>
-          <ButtonGroup>
-            <Button variant="outline" onClick={handleBlock}>
-              Block
-            </Button>
-            <Button variant="outline" onClick={handleDelete}>
-              Delete
-            </Button>
-          </ButtonGroup>
-        </ButtonGroup>
+        <Button variant="outline" aria-label="Go Back" asChild>
+          <Link href="/users" className="mt-10">
+            <ArrowLeftIcon /> Go Back
+          </Link>
+        </Button>
       </CardContent>
     </Card>
   );
