@@ -2,6 +2,7 @@ import { articleReducer } from "@/features/article/store/article.slice";
 import { authReducer } from "@/features/auth/store/auth.slice";
 import { userReducer } from "@/features/user/store/user.slice";
 import { baseApi } from "@/redux/api/baseApi";
+import { imageReducer } from "@/features/image/store/image.slice";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import {
   FLUSH,
@@ -23,6 +24,7 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
+  image: imageReducer,
   article: articleReducer,
   user: userReducer,
   auth: authReducer,

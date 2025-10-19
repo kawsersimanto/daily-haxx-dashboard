@@ -1,6 +1,5 @@
 "use client";
 
-import { ImageUploader } from "@/components/image-uploader/ImageUploader";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -18,21 +17,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { UploadImage } from "@/components/upload-image/UploadImage";
+import { useUploadSingleImageMutation } from "@/features/image/image.api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { ArticleSchema, ArticleSchemaType } from "../article.schema";
 
 export const ArticleForm = () => {
+  const [uploadImageFn] = useUploadSingleImageMutation();
+
   const form = useForm<ArticleSchemaType>({
     resolver: zodResolver(ArticleSchema),
     defaultValues: {
       title: "",
       body: "",
-      categoryId: "",
+      categoryId: "asdfasdf",
       companyName: "",
       coverImage: "",
-      userId: "",
+      userId: "aasdf",
     },
   });
 
@@ -67,22 +70,16 @@ export const ArticleForm = () => {
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="coverImage"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Profile Picture</FormLabel>
+              <FormLabel>Title</FormLabel>
               <FormControl>
-                <ImageUploader
-                  value={field.value}
-                  onChange={field.onChange}
-                  onUploadComplete={(url) => {
-                    console.log("Uploaded image URL:", url);
-                  }}
-                />
+                <UploadImage />
               </FormControl>
+
               <FormMessage />
             </FormItem>
           )}
