@@ -2,7 +2,7 @@ export interface ApiMeta {
   total: number;
   page: number;
   limit: number;
-  totalPage: number;
+  totalPages: number;
 }
 
 export type ApiResponse<T, WithMeta extends boolean = false> = {

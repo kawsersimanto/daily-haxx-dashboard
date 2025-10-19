@@ -1,10 +1,9 @@
-import { UsersTable } from "@/features/user/components/UsersTable";
-import { users } from "@/features/user/user.constants";
+import { UserTable } from "@/features/user/components/UserTable";
 
 const UsersPage = () => {
   return (
     <>
-      <UsersTable data={users} />
+      <UserTable />
     </>
   );
 };

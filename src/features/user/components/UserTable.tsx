@@ -11,40 +11,37 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { formatDate } from "@/utils/date";
-import { ColumnDef } from "@tanstack/react-table";
-import {
-  Clock,
-  Edit,
-  EyeIcon,
-  MoreHorizontal,
-  PlusCircle,
-  Trash,
-} from "lucide-react";
-import Image from "next/image";
+import { IUser } from "@/features/user/user.interface";
+import { ApiResponse } from "@/types/api";
+import { handleMutationRequest } from "@/utils/handleMutationRequest";
+import { type ColumnDef } from "@tanstack/react-table";
+import { Ban, EyeIcon, MoreHorizontal, PlusCircle, Trash } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { useGetArticlesQuery } from "../article.api";
-import { IArticle } from "../article.interface";
+import { useDeleteUserMutation, useGetUsersQuery } from "../user.api";
 
-export const ArticleTable = () => {
+export const UserTable = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const { data } = useGetArticlesQuery({ page, limit });
+  const { data } = useGetUsersQuery({ page, limit });
+  const users = data?.data?.data || [];
+  const [deleteUserFn] = useDeleteUserMutation();
 
-  const articles = data?.data?.data || [];
   const total = data?.data?.meta?.total ?? 0;
   const totalPages = data?.data?.meta?.totalPages ?? 0;
 
-  const handleDelete = (article: IArticle) => {
-    console.log("delete article:", article.id);
+  const handleBlock = (user: IUser) => {
+    console.log(user?.id);
   };
 
-  const handleDeleteMany = (rows: IArticle[], ids: string[]) => {
-    console.log("Deleting:", ids, rows);
+  const handleDelete = async (user: IUser) => {
+    await handleMutationRequest(deleteUserFn, user?.id, {
+      loadingMessage: "Deleting User",
+      successMessage: (res: ApiResponse<string>) => res?.message,
+    });
   };
 
-  const columns: ColumnDef<IArticle>[] = [
+  const columns: ColumnDef<IUser>[] = [
     {
       id: "select",
       header: ({ table }) => (
@@ -63,64 +60,53 @@ export const ArticleTable = () => {
       enableHiding: false,
     },
     {
-      accessorKey: "title",
+      accessorFn: (row) => `${row.firstName} ${row.lastName}`,
+      id: "name",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Title" />
+        <DataTableColumnHeader column={column} title="Name" />
       ),
-      cell: ({ row }) => {
-        return (
-          <div className="flex gap-2">
-            <Image
-              src={row.original?.coverImage || "/placeholder.png"}
-              alt={row.original.title}
-              height={100}
-              width={100}
-              className="h-[50px] w-[50px] object-cover rounded-md border border-slate-200"
-            />
-            <p className="truncate text-sm font-medium mt-2">
-              {row.original?.title}
-            </p>
-          </div>
-        );
-      },
+      cell: ({ row }) => `${row.original.firstName} ${row.original.lastName}`,
     },
     {
-      accessorFn: (row) => row.category?.name,
-      id: "category",
-      header: "Category",
-      cell: ({ row }) => row.original.category?.name || "-",
+      accessorKey: "email",
+      header: "Email",
     },
     {
       accessorKey: "companyName",
       header: "Company",
     },
     {
-      accessorKey: "readingTime",
-      header: "Reading Time",
-      cell: ({ row }) => {
-        return (
-          <Badge variant={"outline"}>
-            <Clock />
-            {row.original.readingTime} min
-          </Badge>
-        );
-      },
+      accessorKey: "jobTitle",
+      header: "Job Title",
     },
     {
-      id: "author",
-      header: "Author",
-      cell: ({ row }) => {
-        return (
-          <Badge variant={"secondary"}>
-            {row.original?.user?.firstName} {row.original?.user?.lastName}
-          </Badge>
-        );
-      },
+      accessorKey: "role",
+      header: "Role",
+      cell: ({ row }) => (
+        <Badge variant="outline" className="bg-slate-200">
+          {row.original.role}
+        </Badge>
+      ),
     },
     {
-      accessorKey: "createdAt",
-      header: "Created At",
-      cell: ({ row }) => formatDate(row.original.createdAt),
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => (
+        <Badge variant={row.original.isActive ? "default" : "secondary"}>
+          {row.original.isActive ? "Active" : "Inactive"}
+        </Badge>
+      ),
+    },
+    {
+      accessorKey: "subscription",
+      header: "Subscription",
+      cell: ({ row }) => (
+        <Badge
+          variant={row.original.hasActiveSubscription ? "default" : "secondary"}
+        >
+          {row.original.hasActiveSubscription ? "Active" : "None"}
+        </Badge>
+      ),
     },
     {
       id: "actions",
@@ -133,16 +119,13 @@ export const ArticleTable = () => {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem asChild>
-              <Link href={`/articles/${row.original.slug}`}>
+              <Link href={`users/${row?.original?.id}`}>
                 <EyeIcon className="text-inherit" />
                 Preview
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href={`/articles/edit/${row.original.id}`}>
-                <Edit className="text-inherit" />
-                Edit
-              </Link>
+            <DropdownMenuItem onClick={() => handleBlock(row.original)}>
+              <Ban className="text-inherit" /> Block
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleDelete(row.original)}>
               <Trash className="text-inherit" />
@@ -154,9 +137,13 @@ export const ArticleTable = () => {
     },
   ];
 
+  const handleDeleteMany = (rows: IUser[], ids: string[]) => {
+    console.log("Deleting:", ids, rows);
+  };
+
   return (
     <DataTable
-      data={articles}
+      data={users}
       columns={columns}
       total={total}
       page={page}
@@ -170,7 +157,7 @@ export const ArticleTable = () => {
       }}
       renderActions={() => (
         <Button variant="outline" size="sm" asChild>
-          <Link href="/articles/create">
+          <Link href="/users/create">
             <PlusCircle /> Add New
           </Link>
         </Button>

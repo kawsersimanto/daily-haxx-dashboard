@@ -1,12 +1,12 @@
 import { baseApi } from "@/redux/api/baseApi";
-import { ApiResponse } from "@/types/api";
+import { ApiParams, ApiResponse } from "@/types/api";
 import { IArticle } from "./article.interface";
 
 export const articleApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getArticles: builder.query<
       ApiResponse<IArticle[], true>,
-      { page: number; limit: number }
+      Partial<ApiParams>
     >({
       query: ({ page, limit }) => `/articles?page=${page}&limit=${limit}`,
       providesTags: ["articles"],

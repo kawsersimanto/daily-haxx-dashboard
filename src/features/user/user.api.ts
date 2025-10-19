@@ -1,22 +1,46 @@
 import { IUser } from "@/features/user/user.interface";
 import { baseApi } from "@/redux/api/baseApi";
+import { ApiParams, ApiResponse } from "@/types/api";
 
 export const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getUsers: builder.query<IUser[], void>({
-      query: () => "/user",
+    getUsers: builder.query<ApiResponse<IUser[], true>, Partial<ApiParams>>({
+      query: ({ page, limit }) => `/users?page=${page}&limit=${limit}`,
+      providesTags: ["users"],
     }),
-    getUserById: builder.query<IUser, string>({
-      query: (id) => `/user/${id}`,
+
+    getUserById: builder.query<ApiResponse<IUser>, string>({
+      query: (id) => `/users/${id}`,
+      providesTags: ["users"],
     }),
-    createUser: builder.mutation<IUser, Partial<IUser>>({
-      query: (body) => ({ url: "/user", method: "POST", body }),
+
+    createUser: builder.mutation<ApiResponse<IUser>, Partial<IUser>>({
+      query: (body) => ({
+        url: "/users",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["users"],
     }),
-    updateUser: builder.mutation<IUser, Partial<IUser> & { id: string }>({
-      query: ({ id, ...body }) => ({ url: `/user/${id}`, method: "PUT", body }),
+
+    updateUser: builder.mutation<
+      ApiResponse<IUser>,
+      Partial<IUser> & { id: string }
+    >({
+      query: ({ id, ...body }) => ({
+        url: `/users/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["users"],
     }),
+
     deleteUser: builder.mutation<{ success: boolean; id: string }, string>({
-      query: (id) => ({ url: `/user/${id}`, method: "DELETE" }),
+      query: (id) => ({
+        url: `/users/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["users"],
     }),
   }),
 });
