@@ -1,4 +1,4 @@
-import { articleSlice } from "@/features/article/store/article.slice";
+import { articleReducer } from "@/features/article/store/article.slice";
 import { authReducer } from "@/features/auth/store/auth.slice";
 import { userReducer } from "@/features/user/store/user.slice";
 import { baseApi } from "@/redux/api/baseApi";
@@ -23,7 +23,7 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
-  article: articleSlice.reducer,
+  article: articleReducer,
   user: userReducer,
   auth: authReducer,
   [baseApi.reducerPath]: baseApi.reducer,

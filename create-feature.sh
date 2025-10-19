@@ -91,8 +91,8 @@ EOF
 
   # --- Update redux/store.ts ---
   if ! grep -q "${feature}Slice" "$STORE_FILE"; then
-    sed -i "/import { baseApi }/a import { ${feature}Slice } from \"@/features/${feature}/store/${feature}.slice\";" "$STORE_FILE"
-    sed -i "/const rootReducer = combineReducers(/a \ \ \ \ ${feature}: ${feature}Slice.reducer," "$STORE_FILE"
+    sed -i "/import { baseApi }/a import { ${feature}Reducer } from \"@/features/${feature}/store/${feature}.slice\";" "$STORE_FILE"
+    sed -i "/const rootReducer = combineReducers(/a \ \ ${feature}: ${feature}Reducer," "$STORE_FILE"
   fi
 
   echo "✅ Feature '$feature' created successfully."

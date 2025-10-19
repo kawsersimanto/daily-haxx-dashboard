@@ -63,13 +63,13 @@ fi
 if [ -f "$STORE_FILE" ]; then
   echo "🧹 Cleaning up store references in $STORE_FILE..."
 
-  # Remove import line for slice
-  sed -i "/import { ${feature}Slice }/d" "$STORE_FILE"
+  # Remove import line for reducer
+  sed -i "/import { ${feature}Reducer }/d" "$STORE_FILE"
 
-  # Remove reducer registration in combineReducers
-  sed -i "/${feature}: ${feature}Slice.reducer,/d" "$STORE_FILE"
+  # Remove reducer registration line
+  sed -i "/${feature}: ${feature}Reducer,/d" "$STORE_FILE"
 
-  # (Optional) Clean up any empty lines left behind
+  # Optional: clean up any empty lines left behind
   sed -i '/^$/N;/^\n$/D' "$STORE_FILE"
 fi
 
