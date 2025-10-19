@@ -2,6 +2,7 @@ import { articleReducer } from "@/features/article/store/article.slice";
 import { authReducer } from "@/features/auth/store/auth.slice";
 import { userReducer } from "@/features/user/store/user.slice";
 import { baseApi } from "@/redux/api/baseApi";
+import { pollReducer } from "@/features/poll/store/poll.slice";
 import { imageReducer } from "@/features/image/store/image.slice";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import {
@@ -24,6 +25,7 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
+  poll: pollReducer,
   image: imageReducer,
   article: articleReducer,
   user: userReducer,
