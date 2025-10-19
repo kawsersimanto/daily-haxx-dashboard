@@ -18,14 +18,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UploadImage } from "@/components/upload-image/UploadImage";
-import { useUploadSingleImageMutation } from "@/features/image/image.api";
+import {
+  useDeleteImageByUrlMutation,
+  useUploadSingleImageMutation,
+} from "@/features/image/image.api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { ArticleSchema, ArticleSchemaType } from "../article.schema";
 
 export const ArticleForm = () => {
-  const [uploadImageFn] = useUploadSingleImageMutation();
+  const uploadMutation = useUploadSingleImageMutation();
+  const deleteMutation = useDeleteImageByUrlMutation();
 
   const form = useForm<ArticleSchemaType>({
     resolver: zodResolver(ArticleSchema),
@@ -75,9 +79,15 @@ export const ArticleForm = () => {
           name="coverImage"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel>Cover Image</FormLabel>
               <FormControl>
-                <UploadImage />
+                <UploadImage
+                  uploadMutation={uploadMutation}
+                  deleteMutation={deleteMutation}
+                  onImageChange={(url) => field.onChange(url)}
+                  defaultImageUrl={field.value}
+                  maxSize={5}
+                />
               </FormControl>
 
               <FormMessage />
