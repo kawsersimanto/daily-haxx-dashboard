@@ -1,15 +1,15 @@
-export interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  data: T;
+export interface ApiMeta {
+  total: number;
+  page: number;
+  limit: number;
+  totalPage: number;
 }
 
-export interface ApiMeta {
-  total?: number;
-  page?: number;
-  limit?: number;
-  totalPage?: number;
-}
+export type ApiResponse<T, WithMeta extends boolean = false> = {
+  success: boolean;
+  message: string;
+  data: WithMeta extends true ? { meta: ApiMeta; data: T } : T;
+};
 
 export interface ApiParams extends ApiMeta {
   searchTerm?: string;

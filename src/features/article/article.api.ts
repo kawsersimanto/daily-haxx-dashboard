@@ -5,23 +5,31 @@ import { IArticle } from "./article.interface";
 export const articleApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getArticles: builder.query<
-      { data: IArticle[]; total: number },
+      ApiResponse<IArticle[], true>,
       { page: number; limit: number }
     >({
       query: ({ page, limit }) => `/articles?page=${page}&limit=${limit}`,
       providesTags: ["articles"],
     }),
-    getArticleById: builder.query<IArticle, string>({
+
+    getArticleById: builder.query<ApiResponse<IArticle>, string>({
       query: (id) => `/articles/${id}`,
     }),
+
     getArticleBySlug: builder.query<ApiResponse<IArticle>, string>({
       query: (slug) => `/articles/slug/${slug}`,
     }),
-    createArticle: builder.mutation<IArticle, Partial<IArticle>>({
-      query: (body) => ({ url: "/articles", method: "POST", body }),
+
+    createArticle: builder.mutation<ApiResponse<IArticle>, Partial<IArticle>>({
+      query: (body) => ({
+        url: "/articles",
+        method: "POST",
+        body,
+      }),
     }),
+
     updateArticle: builder.mutation<
-      IArticle,
+      ApiResponse<IArticle>,
       Partial<IArticle> & { id: string }
     >({
       query: ({ id, ...body }) => ({
@@ -30,8 +38,12 @@ export const articleApi = baseApi.injectEndpoints({
         body,
       }),
     }),
-    deleteArticle: builder.mutation<{ success: boolean; id: string }, string>({
-      query: (id) => ({ url: `/articles/${id}`, method: "DELETE" }),
+
+    deleteArticle: builder.mutation<ApiResponse<{ id: string }>, string>({
+      query: (id) => ({
+        url: `/articles/${id}`,
+        method: "DELETE",
+      }),
     }),
   }),
 });

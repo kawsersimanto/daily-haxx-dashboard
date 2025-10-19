@@ -11,12 +11,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ApiMeta, ApiResponse } from "@/types/api";
 import { formatDate } from "@/utils/date";
 import { ColumnDef } from "@tanstack/react-table";
 import { Clock, Edit, EyeIcon, MoreHorizontal, Trash } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useState } from "react";
 import { useGetArticlesQuery } from "../article.api";
 import { IArticle } from "../article.interface";
@@ -24,33 +23,17 @@ import { IArticle } from "../article.interface";
 export const ArticleDataTable = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const { data } = useGetArticlesQuery<
-    ApiResponse<{ meta: ApiMeta; data: { data: IArticle[] } }>
-  >({ page: 1, limit: 10 });
-  // TODO: Fix pagination
+  const { data } = useGetArticlesQuery({ page, limit });
+
   const articles = data?.data?.data || [];
   const total = data?.data?.meta?.totalPage ?? 0;
-  console.log(data?.data?.meta?.total);
 
-  const router = useRouter();
-  const handleAction = (action: string, article: IArticle) => {
-    switch (action) {
-      case "preview":
-        router.push(`/articles/${article.slug}`);
-        break;
-      case "edit":
-        // router.push(`/articles/edit/${article.slug}`);
-        break;
-      case "delete":
-        console.log("delete article:", article.id);
-        break;
-      default:
-        break;
-    }
+  const handleDelete = (article: IArticle) => {
+    console.log("delete article:", article.id);
   };
 
-  const handleDeleteSelected = (rows: IArticle[], ids: string[]) => {
-    console.log("Deleting:", ids);
+  const handleDeleteMany = (rows: IArticle[], ids: string[]) => {
+    console.log("Deleting:", ids, rows);
   };
 
   const columns: ColumnDef<IArticle>[] = [
@@ -141,21 +124,19 @@ export const ArticleDataTable = () => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() => handleAction("preview", row.original)}
-            >
-              <EyeIcon className="text-inherit" />
-              Preview
+            <DropdownMenuItem asChild>
+              <Link href={`/articles/${row.original.slug}`}>
+                <EyeIcon className="text-inherit" />
+                Preview
+              </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => handleAction("edit", row.original)}
-            >
-              <Edit className="text-inherit" />
-              Edit
+            <DropdownMenuItem asChild>
+              <Link href={`/articles/edit/${row.original.id}`}>
+                <Edit className="text-inherit" />
+                Edit
+              </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => handleAction("delete", row.original)}
-            >
+            <DropdownMenuItem onClick={() => handleDelete(row.original)}>
               <Trash className="text-inherit" />
               Delete
             </DropdownMenuItem>
@@ -173,7 +154,7 @@ export const ArticleDataTable = () => {
       page={page}
       limit={limit}
       onPageChange={setPage}
-      onDeleteSelected={handleDeleteSelected}
+      onDeleteSelected={handleDeleteMany}
       onPageSizeChange={(newLimit) => {
         setLimit(newLimit);
         setPage(1);
