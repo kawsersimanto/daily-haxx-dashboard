@@ -10,6 +10,7 @@ export const pollApi = baseApi.injectEndpoints({
     >({
       query: ({ page, limit }) => `/poll-category?page=${page}&limit=${limit}`,
       providesTags: ["pollCategories"],
+      keepUnusedDataFor: 60,
     }),
     getPollCategoryById: builder.query<IPollCategories, string>({
       query: (id) => `/poll-category/${id}`,
@@ -19,6 +20,7 @@ export const pollApi = baseApi.injectEndpoints({
       Partial<IPollCategories>
     >({
       query: (body) => ({ url: "/poll-category", method: "POST", body }),
+      invalidatesTags: ["pollCategories"],
     }),
     updatePollCategory: builder.mutation<
       IPollCategories,
@@ -29,12 +31,14 @@ export const pollApi = baseApi.injectEndpoints({
         method: "PUT",
         body,
       }),
+      invalidatesTags: ["pollCategories"],
     }),
     deletePollCategory: builder.mutation<
       { success: boolean; id: string },
       string
     >({
       query: (id) => ({ url: `/poll-category/${id}`, method: "DELETE" }),
+      invalidatesTags: ["pollCategories"],
     }),
   }),
 });

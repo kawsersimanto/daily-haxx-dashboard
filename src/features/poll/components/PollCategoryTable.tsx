@@ -111,7 +111,7 @@ export const PollCategoryTable = () => {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem asChild>
-              <Link href={`/articles/categories/${row.original?.id}`}>
+              <Link href={`/polls/categories/${row.original?.id}`}>
                 <Edit className="mr-2 h-4 w-4" /> Edit
               </Link>
             </DropdownMenuItem>
@@ -144,7 +144,7 @@ export const PollCategoryTable = () => {
       }}
       renderActions={() => (
         <Button variant="outline" size="sm" asChild>
-          <Link href="/poll/categories/create">
+          <Link href="/polls/categories/create">
             <PlusCircle /> Add New
           </Link>
         </Button>
