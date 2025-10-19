@@ -41,8 +41,7 @@ export const CategoryTable = () => {
   const handleDelete = async (category: IArticleCategory) => {
     await handleMutationRequest(deleteCategoryFn, category?.id, {
       loadingMessage: "Deleting category",
-      successMessage: (res: ApiResponse<string>) =>
-        res?.message || "Category deleted successfully!",
+      successMessage: (res: ApiResponse<string>) => res?.message,
     });
   };
 

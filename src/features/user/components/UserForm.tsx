@@ -1,5 +1,5 @@
 "use client";
-import { FormVisualizer } from "@/components/form-visualizer/FormVisualizer";
+
 import { LocationSelector } from "@/components/location-selector/LocationSelector";
 import { PhoneInput } from "@/components/phone-input/PhoneInput";
 import { Button } from "@/components/ui/button";
@@ -20,11 +20,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { userSchema, UserSchemaType } from "@/features/user/user.schema";
+import { ApiResponse } from "@/types/api";
+import { handleMutationRequest } from "@/utils/handleMutationRequest";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+import { useCreateUserMutation } from "../user.api";
+import { Role } from "../user.interface";
 
 export const UserForm = () => {
+  const router = useRouter();
+  const [createUserFn] = useCreateUserMutation();
   const form = useForm<UserSchemaType>({
     resolver: zodResolver(userSchema),
     defaultValues: {
@@ -35,22 +41,24 @@ export const UserForm = () => {
       jobTitle: "",
       jobFunction: "",
       country: "",
-      jobLevel: "",
+      jobLevel: "Junior",
       companyIndustry: "",
-      companySize: "",
+      companySize: "100-200",
       postalCode: "",
       phone: "",
+      role: Role.USER,
+      isActive: true,
     },
   });
 
-  const onSubmit = (values: UserSchemaType) => {
-    try {
-      console.log(values);
-      toast(<FormVisualizer values={values} />);
-    } catch (error) {
-      console.error("Form submission error", error);
-      toast.error("Failed to submit the form. Please try again.");
-    }
+  const onSubmit = async (values: UserSchemaType) => {
+    await handleMutationRequest(createUserFn, values, {
+      loadingMessage: "Creating user",
+      successMessage: (res: ApiResponse<string>) => res?.message,
+      onSuccess: () => {
+        router.push("/users");
+      },
+    });
   };
 
   return (
@@ -248,10 +256,7 @@ export const UserForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Company Size</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <Select onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="100-200" />
@@ -310,6 +315,63 @@ export const UserForm = () => {
             />
           </div>
         </div>
+
+        <div className="grid grid-cols-12 gap-4">
+          <div className="col-span-6">
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Role</FormLabel>
+                  <Select onValueChange={field.onChange}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="USER" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {Object.values(Role).map((role) => (
+                        <SelectItem key={role} value={role}>
+                          {role}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="col-span-6">
+            <FormField
+              control={form.control}
+              name="isActive"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Status</FormLabel>
+                  <Select
+                    onValueChange={(val) => field.onChange(val === "true")}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Active" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="true">Active</SelectItem>
+                      <SelectItem value="false">Inactive</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+
         <div className="flex gap-2">
           <Button type="submit">Submit</Button>
         </div>
