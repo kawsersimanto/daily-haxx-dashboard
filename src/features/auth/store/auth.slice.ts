@@ -1,6 +1,8 @@
 import { AuthState } from "@/features/auth/auth.interface";
 import { IUser } from "@/features/user/user.interface";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage";
 
 const initialState: AuthState = {
   email: "",
@@ -62,4 +64,10 @@ export const {
   reset,
 } = authSlice.actions;
 
-export const authReducer = authSlice.reducer;
+const authPersistConfig = {
+  key: "auth",
+  version: 1,
+  storage,
+};
+
+export const authReducer = persistReducer(authPersistConfig, authSlice.reducer);

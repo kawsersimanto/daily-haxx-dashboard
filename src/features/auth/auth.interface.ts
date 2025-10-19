@@ -5,7 +5,7 @@ export interface AuthState {
   currentStep: number;
   totalSteps: number;
   token: string;
-  user: IUser | null;
+  user: Partial<IUser> | null;
 }
 
 export interface VerifyOtpData {
