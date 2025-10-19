@@ -1,23 +1,15 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatDate } from "@/utils/date";
-import { ArrowLeftIcon, UserCircle } from "lucide-react";
+import { UserCircle } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useGetArticleBySlugQuery } from "../article.api";
 import { ArticleDetailsCardSkeleton } from "./ArticleDetailsCardSkeleton";
 
 export const ArticleDetailsCard = ({ slug }: { slug: string }) => {
   const { data, isLoading, isError } = useGetArticleBySlugQuery(slug);
-
   const article = data?.data;
-
-  const handleDelete = () => {
-    console.log(article?.id);
-  };
 
   return (
     <>
@@ -65,25 +57,6 @@ export const ArticleDetailsCard = ({ slug }: { slug: string }) => {
                 dangerouslySetInnerHTML={{ __html: article?.body || "" }}
               ></div>
             </div>
-            <ButtonGroup className="mt-10">
-              <ButtonGroup>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  aria-label="Go Back"
-                  asChild
-                >
-                  <Link href="/articles">
-                    <ArrowLeftIcon />
-                  </Link>
-                </Button>
-              </ButtonGroup>
-              <ButtonGroup>
-                <Button variant="outline" onClick={handleDelete}>
-                  Delete
-                </Button>
-              </ButtonGroup>
-            </ButtonGroup>
           </CardContent>
         </Card>
       )}
