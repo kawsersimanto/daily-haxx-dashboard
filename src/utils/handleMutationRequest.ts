@@ -20,7 +20,7 @@ export const handleMutationRequest = async <T, A>(
   }
 ): Promise<T | null> => {
   const {
-    loadingMessage = "Processing...",
+    loadingMessage = "Processing",
     successMessage,
     errorMessage,
     onSuccess,
@@ -32,7 +32,6 @@ export const handleMutationRequest = async <T, A>(
   try {
     const res = await mutationFn(args).unwrap();
 
-    // ✅ if your API returns { success, message }
     if ((res as any)?.success === false) {
       const message =
         (res as any)?.message || errorMessage || "Operation failed";
@@ -41,7 +40,6 @@ export const handleMutationRequest = async <T, A>(
       return null;
     }
 
-    // ✅ success message (static or dynamic)
     const successMsg =
       typeof successMessage === "function"
         ? successMessage(res)
@@ -50,7 +48,7 @@ export const handleMutationRequest = async <T, A>(
     onSuccess?.(res);
     return res;
   } catch (error) {
-    const message = handleApiError(error, false);
+    const message = handleApiError(error, true);
     toast.error(message || errorMessage || "Something went wrong", {
       id: toastId,
     });
