@@ -1,8 +1,7 @@
 "use client";
 
 import { DataTableColumnHeader } from "@/components/data-table-column-header/DataTableColumnHeader";
-import { DataTablePagination } from "@/components/data-table-pagination/DataTablePagination";
-import { DataTableViewOptions } from "@/components/data-table-view-options/DataTableViewOptions";
+import { DataTable } from "@/components/data-table/DataTable";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -11,64 +10,44 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { IArticleCategory } from "@/features/article/article.interface";
-import { useDeleteCategoryMutation } from "@/features/article/articleCategory.api";
+import {
+  useDeleteCategoryMutation,
+  useGetCategoriesQuery,
+} from "@/features/article/articleCategory.api";
 import { ApiResponse } from "@/types/api";
 import { formatDate } from "@/utils/date";
-import { handleExportCsv } from "@/utils/exportToCsv";
 import { handleMutationRequest } from "@/utils/handleMutationRequest";
-import {
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  useReactTable,
-  type ColumnDef,
-} from "@tanstack/react-table";
-import {
-  Download,
-  Edit,
-  MoreHorizontal,
-  PlusCircle,
-  Search,
-  Trash,
-} from "lucide-react";
+import { type ColumnDef } from "@tanstack/react-table";
+import { Edit, MoreHorizontal, PlusCircle, Trash } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
-export const CategoryTable = ({ data }: { data: IArticleCategory[] }) => {
+export const CategoryTable = () => {
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const { data } = useGetCategoriesQuery();
+  const categories = data?.data || [];
   const [deleteCategoryFn, { isLoading: isDeleting }] =
     useDeleteCategoryMutation();
-  const [globalFilter, setGlobalFilter] = useState("");
-  const [rowSelection, setRowSelection] = useState({});
+
+  // Enable this when the pagination is activated
+  // const total = data?.data?.meta?.total ?? 0;
+  // const totalPages = data?.data?.meta?.totalPage ?? 0;
+
+  const total = 0;
+  const totalPages = 0;
 
   const handleDelete = async (category: IArticleCategory) => {
     await handleMutationRequest(deleteCategoryFn, category?.id, {
-      loadingMessage: "Deleting category...",
+      loadingMessage: "Deleting category",
       successMessage: (res: ApiResponse<string>) =>
         res?.message || "Category deleted successfully!",
     });
   };
 
-  const handleDeleteSelected = () => {
-    const selectedRows = table.getFilteredSelectedRowModel().rows;
-    console.log(
-      "Deleting articles:",
-      selectedRows.map((row) => row.original.id)
-    );
+  const handleDeleteMany = (rows: IArticleCategory[], ids: string[]) => {
+    console.log("Deleting:", ids, rows);
   };
 
   const columns: ColumnDef<IArticleCategory>[] = [
@@ -136,106 +115,27 @@ export const CategoryTable = ({ data }: { data: IArticleCategory[] }) => {
     },
   ];
 
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onRowSelectionChange: setRowSelection,
-    onGlobalFilterChange: setGlobalFilter,
-    state: { rowSelection, globalFilter },
-    initialState: { pagination: { pageSize: 10 } },
-  });
-
-  const selectedCount = table.getFilteredSelectedRowModel().rows.length;
-
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <InputGroup className="max-w-[300px]">
-          <InputGroupInput
-            placeholder="Search category"
-            value={globalFilter ?? ""}
-            onChange={(e) => setGlobalFilter(e.target.value)}
-          />
-          <InputGroupAddon>
-            <Search />
-          </InputGroupAddon>
-        </InputGroup>
-
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/articles/categories/create">
-              <PlusCircle />
-              Add Category
-            </Link>
-          </Button>
-          <DataTableViewOptions table={table} />
-          <Button
-            variant="outline"
-            onClick={() => handleExportCsv(table, "articles.csv")}
-            size="sm"
-          >
-            <Download />
-            Export
-          </Button>
-          {selectedCount > 0 && (
-            <Button
-              variant="destructive"
-              onClick={handleDeleteSelected}
-              size="sm"
-            >
-              Delete ({selectedCount})
-            </Button>
-          )}
-        </div>
-      </div>
-
-      <div className="rounded-md border bg-white">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="text-center">
-                  No categories found.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-
-      <DataTablePagination table={table} />
-    </div>
+    <DataTable
+      data={categories}
+      columns={columns}
+      total={total}
+      page={page}
+      limit={limit}
+      totalPages={totalPages}
+      onPageChange={setPage}
+      onDeleteSelected={handleDeleteMany}
+      onPageSizeChange={(newLimit) => {
+        setLimit(newLimit);
+        setPage(1);
+      }}
+      renderActions={() => (
+        <Button variant="outline" size="sm" asChild>
+          <Link href="/articles/categories/create">
+            <PlusCircle /> Add New
+          </Link>
+        </Button>
+      )}
+    />
   );
 };
