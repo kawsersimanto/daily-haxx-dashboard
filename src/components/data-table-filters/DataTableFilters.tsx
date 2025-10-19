@@ -21,6 +21,7 @@ interface FilterOption {
 
 interface ExtendedColumnMeta {
   filterOptions?: FilterOption[];
+  filterLabel?: string;
 }
 
 export function TableFilters<TData>({ table }: { table: Table<TData> }) {
@@ -33,39 +34,53 @@ export function TableFilters<TData>({ table }: { table: Table<TData> }) {
   if (filterableColumns.length === 0) return null;
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm">
-          <Filter />
-          Filters
-        </Button>
-      </DropdownMenuTrigger>
+    <div className="flex items-center gap-2">
+      {filterableColumns.map((col) => {
+        const filterOptions = (col.columnDef.meta as ExtendedColumnMeta)
+          ?.filterOptions as FilterOption[];
+        const currentValue = col.getFilterValue() as any[] | undefined;
+        const hasActiveFilter = currentValue && currentValue.length > 0;
 
-      <DropdownMenuContent align="end" className="w-[200px]">
-        <DropdownMenuLabel>Filter columns</DropdownMenuLabel>
-        <DropdownMenuSeparator />
+        const handleToggle = (optionValue: any) => {
+          const currentFilters = currentValue || [];
+          const isSelected = currentFilters.includes(optionValue);
 
-        {filterableColumns.map((col) => {
-          const filterOptions = (col.columnDef.meta as ExtendedColumnMeta)
-            ?.filterOptions as FilterOption[];
-          const currentValue = col.getFilterValue();
+          if (isSelected) {
+            // Remove from filters
+            const newFilters = currentFilters.filter((v) => v !== optionValue);
+            col.setFilterValue(newFilters.length > 0 ? newFilters : undefined);
+          } else {
+            // Add to filters
+            col.setFilterValue([...currentFilters, optionValue]);
+          }
+        };
 
-          return (
-            <div key={col.id}>
-              <DropdownMenuLabel className="capitalize text-sm text-muted-foreground px-2 py-1 font-semibold">
-                {col.id}
+        return (
+          <DropdownMenu key={col.id}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Filter />
+                {(col.columnDef.meta as ExtendedColumnMeta)?.filterLabel ||
+                  col.id}
+              </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent align="end" className="w-[200px]">
+              <DropdownMenuLabel className="capitalize">
+                Filter{" "}
+                {(col.columnDef.meta as ExtendedColumnMeta)?.filterLabel ||
+                  col.id}
               </DropdownMenuLabel>
+              <DropdownMenuSeparator />
 
               {filterOptions.map((opt) => {
-                const isActive = currentValue === opt.value;
+                const isActive = currentValue?.includes(opt.value) || false;
 
                 return (
                   <DropdownMenuItem
                     key={String(opt.value)}
                     className="flex items-center gap-2 cursor-pointer"
-                    onClick={() =>
-                      col.setFilterValue(isActive ? undefined : opt.value)
-                    }
+                    onClick={() => handleToggle(opt.value)}
                   >
                     <Checkbox
                       checked={isActive}
@@ -76,18 +91,21 @@ export function TableFilters<TData>({ table }: { table: Table<TData> }) {
                 );
               })}
 
-              <DropdownMenuSeparator />
-            </div>
-          );
-        })}
-
-        <DropdownMenuItem
-          onClick={() => table.resetColumnFilters()}
-          className="text-destructive cursor-pointer"
-        >
-          Reset filters
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+              {hasActiveFilter && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => col.setFilterValue(undefined)}
+                    className="text-destructive cursor-pointer"
+                  >
+                    Clear filter
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      })}
+    </div>
   );
 }

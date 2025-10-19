@@ -119,12 +119,12 @@ export const UserTable = () => {
         ],
       },
       filterFn: (row, columnId, value) => {
-        if (!value) return true;
-        return row.getValue(columnId) === value;
+        if (!value || value.length === 0) return true;
+        return value.includes(row.getValue(columnId));
       },
     },
     {
-      accessorKey: "status",
+      accessorKey: "isActive",
       header: "Status",
       cell: ({ row }) => (
         <Badge variant={row.original.isActive ? "default" : "destructive"}>
@@ -132,14 +132,15 @@ export const UserTable = () => {
         </Badge>
       ),
       meta: {
+        filterLabel: "Status",
         filterOptions: [
           { label: "Active", value: true },
           { label: "Inactive", value: false },
         ],
       },
       filterFn: (row, columnId, value) => {
-        if (value) return true;
-        return String(row.getValue(columnId)) === value;
+        if (!value || value.length === 0) return true;
+        return value.includes(row.getValue(columnId));
       },
     },
     {
