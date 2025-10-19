@@ -210,13 +210,9 @@ export const UserForm = () => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="m@example.com">
-                        m@example.com
-                      </SelectItem>
-                      <SelectItem value="m@google.com">m@google.com</SelectItem>
-                      <SelectItem value="m@support.com">
-                        m@support.com
-                      </SelectItem>
+                      <SelectItem value="Senior">Senior</SelectItem>
+                      <SelectItem value="Junior">Junior</SelectItem>
+                      <SelectItem value="Mid-Level">Mid-Level</SelectItem>
                     </SelectContent>
                   </Select>
 
@@ -258,17 +254,13 @@ export const UserForm = () => {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select Company Size" />
+                        <SelectValue placeholder="100-200" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="m@example.com">
-                        m@example.com
-                      </SelectItem>
-                      <SelectItem value="m@google.com">m@google.com</SelectItem>
-                      <SelectItem value="m@support.com">
-                        m@support.com
-                      </SelectItem>
+                      <SelectItem value="100-200">100-200</SelectItem>
+                      <SelectItem value="200-400">200-400</SelectItem>
+                      <SelectItem value="400-500">400-500</SelectItem>
                     </SelectContent>
                   </Select>
 

@@ -17,7 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react"; // ✅ make sure path is correct
+import { useState } from "react";
 import { Country, useGetCountriesQuery } from "./countryApi";
 
 interface LocationSelectorProps {
@@ -48,7 +48,7 @@ export const LocationSelector = ({
             role="combobox"
             aria-expanded={openCountryDropdown}
             disabled={disabled || isLoading}
-            className="w-full justify-between"
+            className="w-full justify-between bg-white"
           >
             {selectedCountry ? (
               <div className="flex items-center gap-2">
@@ -64,7 +64,7 @@ export const LocationSelector = ({
             ) : isLoading ? (
               <span>Loading...</span>
             ) : (
-              <span>Select Country...</span>
+              <span>Select Country</span>
             )}
             <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
           </Button>
