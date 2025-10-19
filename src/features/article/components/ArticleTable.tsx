@@ -11,7 +11,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ApiResponse } from "@/types/api";
 import { formatDate } from "@/utils/date";
+import { handleMutationRequest } from "@/utils/handleMutationRequest";
 import { ColumnDef } from "@tanstack/react-table";
 import {
   Clock,
@@ -20,24 +22,31 @@ import {
   MoreHorizontal,
   PlusCircle,
   Trash,
+  UserCircle,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { useGetArticlesQuery } from "../article.api";
+import { useDeleteArticleMutation, useGetArticlesQuery } from "../article.api";
 import { IArticle } from "../article.interface";
 
 export const ArticleTable = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const { data } = useGetArticlesQuery({ page, limit });
+  const [deleteArticleFn, { isLoading: isDeletingArticle }] =
+    useDeleteArticleMutation();
 
   const articles = data?.data?.data || [];
   const total = data?.data?.meta?.total ?? 0;
   const totalPages = data?.data?.meta?.totalPages ?? 0;
 
-  const handleDelete = (article: IArticle) => {
+  const handleDelete = async (article: IArticle) => {
     console.log("delete article:", article.id);
+    await handleMutationRequest(deleteArticleFn, article?.id, {
+      loadingMessage: "Deleting Article",
+      successMessage: (res: ApiResponse<string>) => res?.message,
+    });
   };
 
   const handleDeleteMany = (rows: IArticle[], ids: string[]) => {
@@ -61,6 +70,7 @@ export const ArticleTable = () => {
       ),
       enableSorting: false,
       enableHiding: false,
+      size: 30,
     },
     {
       accessorKey: "title",
@@ -69,7 +79,7 @@ export const ArticleTable = () => {
       ),
       cell: ({ row }) => {
         return (
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-[400px] items-center">
             <Image
               src={row.original?.coverImage || "/placeholder.png"}
               alt={row.original.title}
@@ -77,12 +87,13 @@ export const ArticleTable = () => {
               width={100}
               className="h-[50px] w-[50px] object-cover rounded-md border border-slate-200"
             />
-            <p className="truncate text-sm font-medium mt-2">
+            <p className="text-sm font-medium whitespace-break-spaces capitalize line-clamp-2">
               {row.original?.title}
             </p>
           </div>
         );
       },
+      size: 400,
     },
     {
       accessorFn: (row) => row.category?.name,
@@ -112,6 +123,7 @@ export const ArticleTable = () => {
       cell: ({ row }) => {
         return (
           <Badge variant={"secondary"}>
+            <UserCircle />
             {row.original?.user?.firstName} {row.original?.user?.lastName}
           </Badge>
         );
@@ -144,7 +156,10 @@ export const ArticleTable = () => {
                 Edit
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleDelete(row.original)}>
+            <DropdownMenuItem
+              onClick={() => handleDelete(row.original)}
+              disabled={isDeletingArticle}
+            >
               <Trash className="text-inherit" />
               Delete
             </DropdownMenuItem>

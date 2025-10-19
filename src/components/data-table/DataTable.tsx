@@ -66,6 +66,8 @@ export const DataTable = <T extends { id: string }>({
   const table = useReactTable<T>({
     data,
     columns,
+    enableColumnResizing: true,
+    columnResizeMode: "onChange",
     getCoreRowModel: getCoreRowModel<T>(),
     getFilteredRowModel: getFilteredRowModel<T>(),
     manualPagination: true,
@@ -135,7 +137,10 @@ export const DataTable = <T extends { id: string }>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead
+                    key={header.id}
+                    style={{ width: header.getSize() }}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -156,7 +161,10 @@ export const DataTable = <T extends { id: string }>({
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      style={{ width: cell.column.getSize() }}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

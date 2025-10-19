@@ -83,6 +83,7 @@ export const UserTable = () => {
       ),
       enableSorting: false,
       enableHiding: false,
+      size: 30,
     },
     {
       accessorFn: (row) => `${row.firstName} ${row.lastName}`,

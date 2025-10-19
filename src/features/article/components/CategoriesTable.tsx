@@ -66,6 +66,7 @@ export const CategoryTable = () => {
       ),
       enableSorting: false,
       enableHiding: false,
+      size: 20,
     },
     {
       accessorKey: "name",

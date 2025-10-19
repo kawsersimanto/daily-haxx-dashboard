@@ -44,6 +44,7 @@ export const articleApi = baseApi.injectEndpoints({
         url: `/articles/${id}`,
         method: "DELETE",
       }),
+      invalidatesTags: ["articles"],
     }),
   }),
 });
