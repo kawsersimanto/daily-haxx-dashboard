@@ -14,6 +14,7 @@ import {
 import { ApiResponse } from "@/types/api";
 import { formatDate } from "@/utils/date";
 import { handleMutationRequest } from "@/utils/handleMutationRequest";
+import { generateFilterOptions, multiSelectFilterFn } from "@/utils/table";
 import { ColumnDef } from "@tanstack/react-table";
 import {
   Clock,
@@ -52,6 +53,42 @@ export const ArticleTable = () => {
   const handleDeleteMany = (rows: IArticle[], ids: string[]) => {
     console.log("Deleting:", ids, rows);
   };
+
+  const categoryOptions = generateFilterOptions(
+    articles,
+    (article) => article.category.name,
+    {
+      sort: true,
+      removeEmpty: true,
+    }
+  );
+
+  const authorOptions = generateFilterOptions(
+    articles,
+    (article) => `${article.user.firstName} ${article.user.lastName}`,
+    {
+      sort: true,
+      removeEmpty: true,
+    }
+  );
+
+  const companyOptions = generateFilterOptions(
+    articles,
+    (article) => article.companyName,
+    {
+      sort: true,
+      removeEmpty: true,
+    }
+  );
+
+  const readingOptions = generateFilterOptions(
+    articles,
+    (article) => article.readingTime,
+    {
+      sort: true,
+      removeEmpty: true,
+    }
+  );
 
   const columns: ColumnDef<IArticle>[] = [
     {
@@ -100,10 +137,19 @@ export const ArticleTable = () => {
       id: "category",
       header: "Category",
       cell: ({ row }) => row.original.category?.name || "-",
+      meta: {
+        filterOptions: categoryOptions,
+      },
+      filterFn: multiSelectFilterFn,
     },
     {
       accessorKey: "companyName",
       header: "Company",
+      meta: {
+        filterLabel: "Company",
+        filterOptions: companyOptions,
+      },
+      filterFn: multiSelectFilterFn,
     },
     {
       accessorKey: "readingTime",
@@ -116,8 +162,14 @@ export const ArticleTable = () => {
           </Badge>
         );
       },
+      meta: {
+        filterLabel: "Reading Time",
+        filterOptions: readingOptions,
+      },
+      filterFn: multiSelectFilterFn,
     },
     {
+      accessorFn: (row) => `${row.user?.firstName} ${row.user?.lastName}`,
       id: "author",
       header: "Author",
       cell: ({ row }) => {
@@ -128,6 +180,10 @@ export const ArticleTable = () => {
           </Badge>
         );
       },
+      meta: {
+        filterOptions: authorOptions,
+      },
+      filterFn: multiSelectFilterFn,
     },
     {
       accessorKey: "createdAt",

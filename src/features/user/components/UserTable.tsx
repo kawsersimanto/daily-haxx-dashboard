@@ -11,10 +11,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { IUser } from "@/features/user/user.interface";
+import { IUser, Role } from "@/features/user/user.interface";
 import { ApiResponse } from "@/types/api";
 import { handleMutationRequest } from "@/utils/handleMutationRequest";
-import { multiSelectFilterFn } from "@/utils/table";
+import { generateFilterOptions, multiSelectFilterFn } from "@/utils/table";
 import { type ColumnDef } from "@tanstack/react-table";
 import {
   Ban,
@@ -58,6 +58,15 @@ export const UserTable = () => {
       }
     );
   };
+
+  const roleOptions = generateFilterOptions(
+    Object.values(Role),
+    (role) => role,
+    {
+      sort: true,
+      removeEmpty: true,
+    }
+  );
 
   const handleDelete = async (user: IUser) => {
     await handleMutationRequest(deleteUserFn, user?.id, {
@@ -114,12 +123,9 @@ export const UserTable = () => {
         </Badge>
       ),
       meta: {
-        filterOptions: [
-          { label: "Admin", value: "ADMIN" },
-          { label: "User", value: "USER" },
-        ],
+        filterOptions: roleOptions,
+        filterFn: multiSelectFilterFn,
       },
-      filterFn: multiSelectFilterFn,
     },
     {
       accessorKey: "isActive",
@@ -208,13 +214,11 @@ export const UserTable = () => {
         setPage(1);
       }}
       renderActions={() => (
-        <>
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/users/create">
-              <PlusCircle /> Add New
-            </Link>
-          </Button>
-        </>
+        <Button variant="outline" size="sm" asChild>
+          <Link href="/users/create">
+            <PlusCircle /> Add New
+          </Link>
+        </Button>
       )}
     />
   );
