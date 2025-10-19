@@ -81,12 +81,6 @@ export const ${feature}Reducer = ${feature}Slice.reducer;
 EOF
 
   cat <<EOF > "$hooks/use${FeaturePascal}.ts"
-import { useGet${FeaturePascal}sQuery } from "@/features/${feature}/${feature}.api";
-
-export const use${FeaturePascal} = () => {
-  const { data, isLoading, error } = useGet${FeaturePascal}sQuery();
-  return { data, isLoading, error };
-};
 EOF
 
   cat <<EOF > "$components/${FeaturePascal}.tsx"
@@ -99,7 +93,6 @@ EOF
   if ! grep -q "${feature}Slice" "$STORE_FILE"; then
     sed -i "/import { baseApi }/a import { ${feature}Slice } from \"@/features/${feature}/store/${feature}.slice\";" "$STORE_FILE"
     sed -i "/const rootReducer = combineReducers(/a \ \ \ \ ${feature}: ${feature}Slice.reducer," "$STORE_FILE"
-    sed -i "s/whitelist: \[/&\"${feature}\", /" "$STORE_FILE"
   fi
 
   echo "✅ Feature '$feature' created successfully."
