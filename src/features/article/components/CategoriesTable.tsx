@@ -18,6 +18,7 @@ import {
 import { ApiResponse } from "@/types/api";
 import { formatDate } from "@/utils/date";
 import { handleMutationRequest } from "@/utils/handleMutationRequest";
+import { generateFilterOptions, multiSelectFilterFn } from "@/utils/table";
 import { type ColumnDef } from "@tanstack/react-table";
 import { Edit, MoreHorizontal, PlusCircle, Trash } from "lucide-react";
 import Link from "next/link";
@@ -31,12 +32,17 @@ export const CategoryTable = () => {
   const [deleteCategoryFn, { isLoading: isDeleting }] =
     useDeleteCategoryMutation();
 
-  // Enable this when the pagination is activated
-  // const total = data?.data?.meta?.total ?? 0;
-  // const totalPages = data?.data?.meta?.totalPage ?? 0;
-
   const total = 0;
   const totalPages = 0;
+
+  const categoryOptions = generateFilterOptions(
+    categories,
+    (category) => category.name,
+    {
+      sort: true,
+      removeEmpty: true,
+    }
+  );
 
   const handleDelete = async (category: IArticleCategory) => {
     await handleMutationRequest(deleteCategoryFn, category?.id, {
@@ -73,6 +79,11 @@ export const CategoryTable = () => {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Name" />
       ),
+
+      meta: {
+        filterOptions: categoryOptions,
+      },
+      filterFn: multiSelectFilterFn,
     },
     {
       accessorKey: "slug",
