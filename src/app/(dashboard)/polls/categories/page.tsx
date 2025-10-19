@@ -1,5 +1,7 @@
+import { PollCategoryTable } from "@/features/poll/components/PollCategoryTable";
+
 const PollCategoryPage = () => {
-  return <>Poll category</>;
+  return <PollCategoryTable />;
 };
 
 export default PollCategoryPage;
