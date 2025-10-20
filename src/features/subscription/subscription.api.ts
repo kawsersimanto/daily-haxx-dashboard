@@ -14,6 +14,7 @@ export const subscriptionApi = baseApi.injectEndpoints({
     createSubscription: builder.mutation<ISubscription, Partial<ISubscription>>(
       {
         query: (body) => ({ url: "/subscription-plans", method: "POST", body }),
+        invalidatesTags: ["subscription"],
       }
     ),
     updateSubscription: builder.mutation<
@@ -25,12 +26,14 @@ export const subscriptionApi = baseApi.injectEndpoints({
         method: "PUT",
         body,
       }),
+      invalidatesTags: ["subscription"],
     }),
     deleteSubscription: builder.mutation<
       { success: boolean; id: string },
       string
     >({
       query: (id) => ({ url: `/subscription-plans/${id}`, method: "DELETE" }),
+      invalidatesTags: ["subscription"],
     }),
   }),
 });
