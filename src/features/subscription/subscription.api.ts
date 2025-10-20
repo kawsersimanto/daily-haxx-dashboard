@@ -8,8 +8,12 @@ export const subscriptionApi = baseApi.injectEndpoints({
       query: () => "/subscription-plans",
       providesTags: ["subscription"],
     }),
-    getSubscriptionById: builder.query<ISubscription, string>({
+    getSubscriptionById: builder.query<
+      ApiResponse<ISubscription, false>,
+      string
+    >({
       query: (id) => `/subscription-plans/${id}`,
+      providesTags: ["subscription"],
     }),
     createSubscription: builder.mutation<ISubscription, Partial<ISubscription>>(
       {

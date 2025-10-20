@@ -17,7 +17,6 @@ import { generateFilterOptions, multiSelectFilterFn } from "@/utils/table";
 import { type ColumnDef } from "@tanstack/react-table";
 import {
   Ban,
-  EyeIcon,
   MoreHorizontal,
   Pencil,
   PlusCircle,
@@ -73,28 +72,17 @@ export const SubscriptionTable = () => {
     }
   );
 
-  // const pricingOptions = generateFilterOptions(
-  //   subscriptions,
-  //   (subscription) => subscription?.price,
-  //   {
-  //     sort: true,
-  //     removeEmpty: true,
-  //   }
-  // );
-
   const pricingOptions = generateFilterOptions(
     subscriptions,
     (subscription) => subscription?.price,
     {
       sort: true,
-      // removeEmpty: true,
+      removeEmpty: true,
     }
   ).map((opt) => ({
     label: opt.value === 0 ? "Free" : `$${opt.value}`,
     value: opt.value,
   }));
-
-  console.log(pricingOptions);
 
   const columns: ColumnDef<ISubscription>[] = [
     {
@@ -207,11 +195,6 @@ export const SubscriptionTable = () => {
           <DropdownMenuContent align="end">
             <DropdownMenuItem asChild>
               <Link href={`subscriptions/${row.original.id}`}>
-                <EyeIcon className="text-inherit" /> Preview
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href={`subscriptions/edit/${row.original.id}`}>
                 <Pencil className="text-inherit" /> Edit
               </Link>
             </DropdownMenuItem>
