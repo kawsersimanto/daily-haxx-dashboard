@@ -40,3 +40,25 @@ export const generateFilterOptions = <T>(
 
   return result;
 };
+
+export const dateRangeFilterFn = <TData>(
+  row: Row<TData>,
+  columnId: string,
+  value: { from?: Date; to?: Date }
+) => {
+  if (!value || (!value.from && !value.to)) return true;
+
+  const cellValue = row.getValue(columnId);
+  if (!cellValue) return false;
+
+  const date = new Date(cellValue as string);
+
+  if (value.from && date < value.from) return false;
+  if (value.to) {
+    const toEndOfDay = new Date(value.to);
+    toEndOfDay.setHours(23, 59, 59, 999);
+    if (date > toEndOfDay) return false;
+  }
+
+  return true;
+};

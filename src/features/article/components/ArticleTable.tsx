@@ -14,7 +14,11 @@ import {
 import { ApiResponse } from "@/types/api";
 import { formatDate } from "@/utils/date";
 import { handleMutationRequest } from "@/utils/handleMutationRequest";
-import { generateFilterOptions, multiSelectFilterFn } from "@/utils/table";
+import {
+  dateRangeFilterFn,
+  generateFilterOptions,
+  multiSelectFilterFn,
+} from "@/utils/table";
 import { ColumnDef } from "@tanstack/react-table";
 import {
   Clock,
@@ -189,6 +193,11 @@ export const ArticleTable = () => {
       accessorKey: "createdAt",
       header: "Created At",
       cell: ({ row }) => formatDate(row.original.createdAt),
+      meta: {
+        filterLabel: "Created Date",
+        filterType: "dateRange",
+      },
+      filterFn: dateRangeFilterFn,
     },
     {
       id: "actions",

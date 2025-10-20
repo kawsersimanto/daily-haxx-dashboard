@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Table } from "@tanstack/react-table";
 import { SlidersHorizontal } from "lucide-react";
+import { DateRangeFilter } from "../data-range-filter/DateRangeFilter";
 
 interface FilterOption {
   label: string;
@@ -22,22 +23,36 @@ interface FilterOption {
 interface ExtendedColumnMeta {
   filterOptions?: FilterOption[];
   filterLabel?: string;
+  filterType?: "select" | "dateRange"; // Add filter type
 }
 
 export function TableFilters<TData>({ table }: { table: Table<TData> }) {
-  const filterableColumns = table
-    .getAllColumns()
-    .filter((col) =>
-      Array.isArray((col.columnDef.meta as ExtendedColumnMeta)?.filterOptions)
+  const filterableColumns = table.getAllColumns().filter((col) => {
+    const meta = col.columnDef.meta as ExtendedColumnMeta;
+    return (
+      Array.isArray(meta?.filterOptions) || meta?.filterType === "dateRange"
     );
+  });
 
   if (filterableColumns.length === 0) return null;
 
   return (
     <div className="flex items-center gap-2">
       {filterableColumns.map((col) => {
-        const filterOptions = (col.columnDef.meta as ExtendedColumnMeta)
-          ?.filterOptions as FilterOption[];
+        const meta = col.columnDef.meta as ExtendedColumnMeta;
+
+        // Render date range filter
+        if (meta?.filterType === "dateRange") {
+          return (
+            <DateRangeFilter
+              key={col.id}
+              column={col}
+              title={meta?.filterLabel || col.id}
+            />
+          );
+        }
+
+        const filterOptions = meta?.filterOptions as FilterOption[];
         const currentValue = col.getFilterValue() as any[] | undefined;
         const hasActiveFilter = currentValue && currentValue.length > 0;
 
@@ -46,11 +61,9 @@ export function TableFilters<TData>({ table }: { table: Table<TData> }) {
           const isSelected = currentFilters.includes(optionValue);
 
           if (isSelected) {
-            // Remove from filters
             const newFilters = currentFilters.filter((v) => v !== optionValue);
             col.setFilterValue(newFilters.length > 0 ? newFilters : undefined);
           } else {
-            // Add to filters
             col.setFilterValue([...currentFilters, optionValue]);
           }
         };
@@ -58,18 +71,15 @@ export function TableFilters<TData>({ table }: { table: Table<TData> }) {
         return (
           <DropdownMenu key={col.id}>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="capitalize">
+              <Button variant="outline" size="sm">
                 <SlidersHorizontal />
-                {(col.columnDef.meta as ExtendedColumnMeta)?.filterLabel ||
-                  col.id}
+                {meta?.filterLabel || col.id}
               </Button>
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end" className="w-[200px]">
               <DropdownMenuLabel className="capitalize">
-                Filter{" "}
-                {(col.columnDef.meta as ExtendedColumnMeta)?.filterLabel ||
-                  col.id}
+                Filter {meta?.filterLabel || col.id}
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
 
