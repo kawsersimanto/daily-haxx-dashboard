@@ -1,4 +1,10 @@
-import { LayoutDashboard, LayoutList, ListTodo, Users } from "lucide-react";
+import {
+  CircleDollarSign,
+  LayoutDashboard,
+  LayoutList,
+  ListTodo,
+  Users,
+} from "lucide-react";
 
 export const sidebarMenu = [
   {
@@ -28,12 +34,11 @@ export const sidebarMenu = [
   },
   {
     title: "Subscriptions",
-    icon: ListTodo,
+    icon: CircleDollarSign,
     url: "#",
     items: [
       { title: "All Subscriptions", url: "/subscriptions" },
       { title: "Add New", url: "/subscriptions/create" },
-      { title: "Categories", url: "/subscriptions/categories" },
     ],
   },
   {
