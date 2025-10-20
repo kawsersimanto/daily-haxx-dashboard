@@ -1,3 +1,17 @@
+export enum CurrencyEnum {
+  USD = "usd",
+  EUR = "eur",
+  GBP = "gbp",
+  CAD = "cad",
+  AUD = "aud",
+  JPY = "jpy",
+}
+
+export enum IntervalEnum {
+  MONTH = "month",
+  YEAR = "year",
+}
+
 export interface ISubscriptionFeature {
   id: string;
   name: string;
@@ -12,8 +26,8 @@ export interface ISubscription {
   stripeProductId: string;
   description: string;
   price: number;
-  currency: string;
-  interval: "month" | "year";
+  currency: CurrencyEnum;
+  interval: IntervalEnum;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

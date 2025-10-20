@@ -1,19 +1,28 @@
 import { z } from "zod";
+import { CurrencyEnum, IntervalEnum } from "./subscription.interface";
 
-export const subscriptionFeatureSchema = z.object({
-  name: z.string().min(1, "Feature name is required"),
-  description: z.string().min(1, "Feature description is required"),
+const currencyEnum = z.enum(Object.values(CurrencyEnum), {
+  error: () => ({ message: "Please select a valid currency" }),
 });
 
-export const subscriptionSchema = z.object({
-  name: z.string().min(1, "Subscription name is required"),
+const intervalEnum = z.enum(Object.values(IntervalEnum), {
+  error: () => ({ message: "Please select a valid interval" }),
+});
+
+export const SubscriptionSchema = z.object({
+  name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
-  price: z.number().nonnegative("Price must be 0 or greater"),
-  currency: z.enum(["usd", "eur", "gbp"]).default("usd"),
-  interval: z.enum(["month", "year"]),
+  price: z.number().min(0, "Price is required"),
+  currency: currencyEnum,
+  interval: intervalEnum,
   features: z
-    .array(subscriptionFeatureSchema)
+    .array(
+      z.object({
+        name: z.string().min(1, "Feature name is required"),
+        description: z.string().min(1, "Feature description is required"),
+      })
+    )
     .min(1, "At least one feature is required"),
 });
 
-export type SubscriptionSchema = z.infer<typeof subscriptionSchema>;
+export type SubscriptionSchemaType = z.infer<typeof SubscriptionSchema>;

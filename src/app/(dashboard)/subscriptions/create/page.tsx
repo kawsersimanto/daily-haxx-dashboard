@@ -1,4 +1,5 @@
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { SubscriptionForm } from "@/features/subscription/components/SubscriptionForm";
 
 const CreateSubscriptionPage = () => {
   return (
@@ -9,7 +10,9 @@ const CreateSubscriptionPage = () => {
             Create Subscription
           </h2>
         </CardTitle>
-        <CardDescription>Subscription Form</CardDescription>
+        <CardDescription>
+          <SubscriptionForm />
+        </CardDescription>
       </Card>
     </div>
   );
