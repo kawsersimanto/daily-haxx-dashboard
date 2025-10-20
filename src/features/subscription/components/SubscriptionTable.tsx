@@ -13,7 +13,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ApiResponse } from "@/types/api";
 import { handleMutationRequest } from "@/utils/handleMutationRequest";
-import { generateFilterOptions, multiSelectFilterFn } from "@/utils/table";
+import {
+  dateRangeFilterFn,
+  generateFilterOptions,
+  multiSelectFilterFn,
+} from "@/utils/table";
 import { type ColumnDef } from "@tanstack/react-table";
 import {
   Ban,
@@ -182,6 +186,11 @@ export const SubscriptionTable = () => {
       accessorKey: "createdAt",
       header: "Created",
       cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString(),
+      meta: {
+        filterLabel: "Created Date",
+        filterType: "dateRange",
+      },
+      filterFn: dateRangeFilterFn,
     },
     {
       id: "actions",
