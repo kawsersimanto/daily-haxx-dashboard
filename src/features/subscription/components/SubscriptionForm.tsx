@@ -17,11 +17,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
+import { ApiResponse } from "@/types/api";
+import { handleMutationRequest } from "@/utils/handleMutationRequest";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useFieldArray, useForm } from "react-hook-form";
-import { toast } from "sonner";
+import { useCreateSubscriptionMutation } from "../subscription.api";
 import { CurrencyEnum, IntervalEnum } from "../subscription.interface";
 import {
   SubscriptionSchema,
@@ -29,6 +33,9 @@ import {
 } from "../subscription.schema";
 
 export const SubscriptionForm = () => {
+  const router = useRouter();
+  const [createSubscriptionFn, { isLoading }] = useCreateSubscriptionMutation();
+
   const form = useForm<SubscriptionSchemaType>({
     resolver: zodResolver(SubscriptionSchema),
     defaultValues: {
@@ -46,17 +53,14 @@ export const SubscriptionForm = () => {
     name: "features",
   });
 
-  const onSubmit = (values: SubscriptionSchemaType) => {
-    try {
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      );
-    } catch (error) {
-      console.error("Form submission error", error);
-      toast.error("Failed to submit the form. Please try again.");
-    }
+  const onSubmit = async (values: SubscriptionSchemaType) => {
+    await handleMutationRequest(createSubscriptionFn, values, {
+      loadingMessage: "Creating Subscription",
+      successMessage: (res: ApiResponse<string>) => res?.message,
+      onSuccess: () => {
+        router.push("/subscriptions");
+      },
+    });
   };
 
   return (
@@ -101,20 +105,24 @@ export const SubscriptionForm = () => {
         <FormField
           control={form.control}
           name="price"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Price</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="249.99"
-                  type="number"
-                  step="0.01"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          render={({ field }) => {
+            const { onChange, ...rest } = field;
+            return (
+              <FormItem>
+                <FormLabel>Price</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="249.99"
+                    type="number"
+                    onChange={(e) => onChange(e.target.valueAsNumber)}
+                    step="0.01"
+                    {...rest}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
         />
 
         <FormField
@@ -241,13 +249,22 @@ export const SubscriptionForm = () => {
               variant="link"
               className="!p-0 !m-0 self-start"
               onClick={() => append({ name: "", description: "" })}
+              disabled={isLoading}
             >
               <Plus /> Add New Feature
             </Button>
           </div>
         </div>
 
-        <Button type="submit">Submit</Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Spinner /> Submitting
+            </>
+          ) : (
+            "Submit"
+          )}
+        </Button>
       </form>
     </Form>
   );

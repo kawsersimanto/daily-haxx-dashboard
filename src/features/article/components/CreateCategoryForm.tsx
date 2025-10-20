@@ -16,11 +16,11 @@ import {
   ArticleCategorySchemaType,
 } from "@/features/article/article.schema";
 import { useCreateCategoryMutation } from "@/features/article/articleCategory.api";
-import { handleApiError } from "@/utils/handleApiError";
+import { ApiResponse } from "@/types/api";
+import { handleMutationRequest } from "@/utils/handleMutationRequest";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 
 export const CreateCategoryForm = () => {
   const router = useRouter();
@@ -33,18 +33,13 @@ export const CreateCategoryForm = () => {
   });
 
   const onSubmit = async (values: ArticleCategorySchemaType) => {
-    try {
-      const res = await createCategoryFn(values).unwrap();
-      if (res?.success) {
-        toast.success(res?.message);
+    await handleMutationRequest(createCategoryFn, values, {
+      loadingMessage: "Creating Article Category",
+      successMessage: (res: ApiResponse<string>) => res?.message,
+      onSuccess: () => {
         router.push("/articles/categories");
-      } else {
-        toast.error(res?.message);
-      }
-      console.log(res);
-    } catch (error) {
-      handleApiError(error);
-    }
+      },
+    });
   };
 
   return (

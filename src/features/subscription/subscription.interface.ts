@@ -13,10 +13,10 @@ export enum IntervalEnum {
 }
 
 export interface ISubscriptionFeature {
-  id: string;
+  id?: string;
   name: string;
   description: string;
-  planId: string;
+  planId?: string;
 }
 
 export interface ISubscription {
