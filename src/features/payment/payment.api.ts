@@ -1,22 +1,39 @@
 import { baseApi } from "@/redux/api/baseApi";
-import { Payment } from "./payment.interface";
+import { ApiResponse } from "@/types/api";
+import { IPaymentRecord } from "./payment.interface";
 
 export const paymentApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getPayments: builder.query<Payment[], void>({
-      query: () => "/payment",
+    getPayments: builder.query<ApiResponse<IPaymentRecord[]>, void>({
+      query: () => "/subscription-payments",
+      providesTags: ["payments"],
     }),
-    getPaymentById: builder.query<Payment, string>({
-      query: (id) => `/payment/${id}`,
+    getPaymentById: builder.query<IPaymentRecord, string>({
+      query: (id) => `/subscription-payments/${id}`,
     }),
-    createPayment: builder.mutation<Payment, Partial<Payment>>({
-      query: (body) => ({ url: "/payment", method: "POST", body }),
+    createPayment: builder.mutation<IPaymentRecord, Partial<IPaymentRecord>>({
+      query: (body) => ({
+        url: "/subscription-payments",
+        method: "POST",
+        body,
+      }),
     }),
-    updatePayment: builder.mutation<Payment, Partial<Payment> & { id: string }>(
-      { query: ({ id, ...body }) => ({ url: `/payment/${id}`, method: "PUT", body }) }
-    ),
+    updatePayment: builder.mutation<
+      IPaymentRecord,
+      Partial<IPaymentRecord> & { id: string }
+    >({
+      query: ({ id, ...body }) => ({
+        url: `/subscription-payments/${id}`,
+        method: "PUT",
+        body,
+      }),
+    }),
     deletePayment: builder.mutation<{ success: boolean; id: string }, string>({
-      query: (id) => ({ url: `/payment/${id}`, method: "DELETE" }),
+      query: (id) => ({
+        url: `/subscription-payments/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["payments"],
     }),
   }),
 });

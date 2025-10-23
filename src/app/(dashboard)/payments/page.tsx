@@ -1,5 +1,7 @@
+import { PaymentTable } from "@/features/payment/components/PaymentTable";
+
 const PaymentPage = () => {
-  return <>Payment</>;
+  return <PaymentTable />;
 };
 
 export default PaymentPage;
