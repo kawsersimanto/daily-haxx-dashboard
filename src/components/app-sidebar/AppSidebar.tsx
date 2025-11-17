@@ -20,7 +20,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { sidebarMenu } from "@/constants/sidebarMenu";
+import { useSidebarMenu } from "@/hooks/useSidebarMenu";
 import { cn } from "@/lib/utils"; // <- shadcn utility
 import { ChevronDown, ChevronRight } from "lucide-react";
 import Image from "next/image";
@@ -31,6 +31,7 @@ import { useState } from "react";
 export const AppSidebar = () => {
   const [openItems, setOpenItems] = useState<string[]>(["Analytics"]);
   const pathname = usePathname();
+  const sidebarMenu = useSidebarMenu();
 
   const toggleItem = (title: string) => {
     setOpenItems((prev) =>
@@ -38,12 +39,6 @@ export const AppSidebar = () => {
         ? prev.filter((item) => item !== title)
         : [...prev, title]
     );
-  };
-
-  const user = {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
   };
 
   return (
@@ -159,7 +154,7 @@ export const AppSidebar = () => {
 
       {/* User */}
       <SidebarFooter className="md:px-5 px-1">
-        <AppUser user={user} />
+        <AppUser />
       </SidebarFooter>
     </Sidebar>
   );

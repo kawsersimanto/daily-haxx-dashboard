@@ -26,7 +26,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useCreateUserMutation } from "../user.api";
-import { Role } from "../user.interface";
+import { IRole } from "../user.interface";
 
 export const UserForm = () => {
   const router = useRouter();
@@ -46,7 +46,7 @@ export const UserForm = () => {
       companySize: "100-200",
       postalCode: "",
       phone: "",
-      role: Role.USER,
+      role: IRole.USER,
       isActive: true,
     },
   });
@@ -331,7 +331,7 @@ export const UserForm = () => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {Object.values(Role).map((role) => (
+                      {Object.values(IRole).map((role) => (
                         <SelectItem key={role} value={role}>
                           {role}
                         </SelectItem>

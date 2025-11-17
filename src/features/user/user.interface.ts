@@ -1,4 +1,4 @@
-export enum Role {
+export enum IRole {
   ADMIN = "ADMIN",
   USER = "USER",
 }
@@ -8,6 +8,7 @@ export interface IUser {
   firstName: string;
   lastName: string;
   email: string;
+  profileImage: string | null;
   companyName: string;
   jobTitle: string;
   jobFunction: string;
@@ -18,7 +19,7 @@ export interface IUser {
   postalCode: string;
   phone: string;
   isEmailVerified: boolean;
-  role: Role;
+  role: IRole;
   isActive: boolean;
   hasActiveSubscription: boolean;
   stripeCustomerId: string;

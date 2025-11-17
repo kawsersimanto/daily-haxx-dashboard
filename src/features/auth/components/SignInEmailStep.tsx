@@ -11,20 +11,21 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { useAppDispatch, useAppSelector } from "@/redux/hook";
+import { useAppSelector } from "@/redux/hook";
 import { handleApiError } from "@/utils/handleApiError";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 import { toast } from "sonner";
-import { useSendOtpMutation } from "../auth.api";
 import { EmailFormValues, emailSchema } from "../auth.schema";
-import { nextStep, setEmail } from "../store/auth.slice";
+import { useAuth } from "../hooks/useAuth";
+import { nextStep } from "../store/auth.slice";
 
 export const SignInEmailStep = () => {
-  const dispatch = useAppDispatch();
+  const dispatch = useDispatch();
   const email = useAppSelector((state) => state.auth.email);
-  const [sendOtp, { isLoading: isSending }] = useSendOtpMutation();
+  const { handleSendOtp, isLoading: isSending } = useAuth();
 
   const form = useForm<EmailFormValues>({
     resolver: zodResolver(emailSchema),
@@ -35,8 +36,7 @@ export const SignInEmailStep = () => {
 
   const onSubmit = async (data: EmailFormValues) => {
     try {
-      dispatch(setEmail(data.email));
-      const res = await sendOtp(data.email).unwrap();
+      const res = await handleSendOtp({ email: data.email });
       toast.success(res.message || "Verification code sent!");
       dispatch(nextStep());
     } catch (error) {

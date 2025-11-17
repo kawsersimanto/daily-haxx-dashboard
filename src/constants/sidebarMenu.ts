@@ -1,3 +1,5 @@
+import { IRole } from "@/features/user/user.interface";
+import { SidebarMenuItem } from "@/types/sidebar";
 import {
   CalendarClock,
   CircleDollarSign,
@@ -7,13 +9,13 @@ import {
   Users,
 } from "lucide-react";
 
-export const sidebarMenu = [
-  {
+export const ALL_MENU_ITEMS: Record<string, SidebarMenuItem> = {
+  dashboard: {
     title: "Dashboard",
     icon: LayoutDashboard,
     url: "/",
   },
-  {
+  articles: {
     title: "Articles",
     icon: LayoutList,
     url: "#",
@@ -23,7 +25,7 @@ export const sidebarMenu = [
       { title: "Categories", url: "/articles/categories" },
     ],
   },
-  {
+  polls: {
     title: "Polls",
     icon: ListTodo,
     url: "#",
@@ -33,7 +35,7 @@ export const sidebarMenu = [
       { title: "Categories", url: "/polls/categories" },
     ],
   },
-  {
+  subscriptions: {
     title: "Subscriptions",
     icon: CalendarClock,
     url: "#",
@@ -42,7 +44,7 @@ export const sidebarMenu = [
       { title: "Add New", url: "/subscriptions/create" },
     ],
   },
-  {
+  payments: {
     title: "Payments",
     icon: CircleDollarSign,
     url: "#",
@@ -51,7 +53,7 @@ export const sidebarMenu = [
       { title: "Add New", url: "/payments/create" },
     ],
   },
-  {
+  users: {
     title: "Users",
     icon: Users,
     url: "#",
@@ -60,4 +62,30 @@ export const sidebarMenu = [
       { title: "Add New", url: "/users/create" },
     ],
   },
+};
+
+export const COMMON_ROUTES = [
+  "/profile",
+  "/settings",
+  "/change-password",
+  "/notifications",
 ];
+
+export const ROLE_MENU_CONFIG: Record<IRole, string[]> = {
+  [IRole.ADMIN]: [
+    "dashboard",
+    "articles",
+    "polls",
+    "subscriptions",
+    "payments",
+    "users",
+  ],
+  [IRole.USER]: [
+    "dashboard",
+    "articles",
+    "polls",
+    "subscriptions",
+    "payments",
+    "users",
+  ],
+};

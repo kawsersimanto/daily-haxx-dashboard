@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { IUser, Role } from "@/features/user/user.interface";
+import { IRole, IUser } from "@/features/user/user.interface";
 import { ApiResponse } from "@/types/api";
 import { handleMutationRequest } from "@/utils/handleMutationRequest";
 import { generateFilterOptions, multiSelectFilterFn } from "@/utils/table";
@@ -59,7 +59,7 @@ export const UserTable = () => {
   };
 
   const roleOptions = generateFilterOptions(
-    Object.values(Role),
+    Object.values(IRole),
     (role) => role,
     {
       sort: true,

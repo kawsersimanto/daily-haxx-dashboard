@@ -23,15 +23,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { useSendOtpMutation, useVerifyOtpMutation } from "../auth.api";
-import { nextStep, prevStep, setToken } from "../store/auth.slice";
+import { useAuth } from "../hooks/useAuth";
+import { prevStep } from "../store/auth.slice";
 
 export const SignInOtpStep = () => {
   const dispatch = useAppDispatch();
-  const email = useAppSelector((state) => state.auth.email);
+  const email = useAppSelector((state) => state.auth?.email);
 
-  const [sendOtp, { isLoading: isResendingOtp }] = useSendOtpMutation();
-  const [verifyOtp, { isLoading: isVerifying }] = useVerifyOtpMutation();
+  const { handleLogin, handleSendOtp, isLoading } = useAuth();
 
   const form = useForm<OtpFormValues>({
     resolver: zodResolver(otpSchema),
@@ -41,15 +40,8 @@ export const SignInOtpStep = () => {
 
   const onSubmit = async (data: OtpFormValues) => {
     try {
-      const res = await verifyOtp({ email, otp: data.otp }).unwrap();
-      if (res?.success) {
-        dispatch(setToken(res?.token));
-        // dispatch(setUser(res?.user));
-        toast.success(res?.message || "OTP verified successfully!");
-        dispatch(nextStep());
-      } else {
-        toast.error(res?.message || "Invalid OTP");
-      }
+      await handleLogin({ email: email || "", otp: parseInt(data?.otp, 10) });
+      toast.success("OTP verified successfully!");
     } catch (err) {
       handleApiError(err);
     }
@@ -59,7 +51,7 @@ export const SignInOtpStep = () => {
     if (!email) return;
 
     try {
-      const res = await sendOtp(email).unwrap();
+      const res = await handleSendOtp({ email });
       toast.success(res.message || "OTP sent successfully!");
     } catch (err) {
       handleApiError(err);
@@ -121,11 +113,11 @@ export const SignInOtpStep = () => {
             </Button>
 
             <Button
-              disabled={!form.formState.isValid || isVerifying}
+              disabled={!form.formState.isValid || isLoading}
               type="submit"
               className="md:text-lg text-sm font-medium text-background h-auto py-2.5 grow"
             >
-              {isVerifying ? <Spinner /> : "Verify"}
+              {isLoading ? <Spinner /> : "Verify"}
             </Button>
           </div>
 
@@ -135,7 +127,7 @@ export const SignInOtpStep = () => {
               variant={"link"}
               className="h-auto p-0 font-semibold md:text-lg text-sm text-foreground"
               onClick={handleResend}
-              disabled={isResendingOtp}
+              disabled={isLoading}
             >
               Resend code
             </Button>

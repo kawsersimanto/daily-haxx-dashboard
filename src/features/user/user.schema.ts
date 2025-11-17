@@ -1,4 +1,4 @@
-import { Role } from "@/features/user/user.interface";
+import { IRole } from "@/features/user/user.interface";
 import { z } from "zod";
 
 export const userSchema = z.object({
@@ -14,7 +14,7 @@ export const userSchema = z.object({
   companySize: z.string().min(1, "Company size is required"),
   postalCode: z.string().min(1, "Postal code is required"),
   phone: z.string().min(1, "Phone number is required"),
-  role: z.enum(Object.values(Role)),
+  role: z.enum(Object.values(IRole)),
   isActive: z.boolean(),
 });
 

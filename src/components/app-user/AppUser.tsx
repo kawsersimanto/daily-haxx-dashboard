@@ -25,18 +25,12 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import Link from "next/link";
 
-export const AppUser = ({
-  user,
-}: {
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
-  };
-}) => {
+export const AppUser = () => {
   const { isMobile } = useSidebar();
+  const { handleLogout, profile } = useAuth();
 
   return (
     <SidebarMenu>
@@ -48,14 +42,19 @@ export const AppUser = ({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg bg-primary text-white">
-                  CN
+                <AvatarImage
+                  src={profile?.profileImage ?? ""}
+                  alt={`${profile?.firstName} ${profile?.lastName}`}
+                />
+                <AvatarFallback className="rounded-lg bg-primary text-white uppercase">
+                  {profile?.firstName?.slice(0, 2)}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
+                <span className="truncate font-medium">
+                  {profile?.firstName} {profile?.lastName}
+                </span>
+                <span className="truncate text-xs">{profile?.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -69,14 +68,19 @@ export const AppUser = ({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg bg-primary text-white">
-                    CN
+                  <AvatarImage
+                    src={profile?.profileImage ?? ""}
+                    alt={`${profile?.firstName} ${profile?.lastName}`}
+                  />
+                  <AvatarFallback className="rounded-lg bg-primary text-white uppercase">
+                    {profile?.firstName?.slice(0, 2)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+                  <span className="truncate font-medium">
+                    {profile?.firstName} {profile?.lastName}
+                  </span>
+                  <span className="truncate text-xs">{profile?.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
@@ -105,7 +109,7 @@ export const AppUser = ({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut className="!text-inherit" />
               Log out
             </DropdownMenuItem>
