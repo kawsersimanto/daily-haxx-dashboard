@@ -1,6 +1,5 @@
 "use client";
 
-import { DataTableColumnHeader } from "@/components/data-table-column-header/DataTableColumnHeader";
 import { DataTable } from "@/components/data-table/DataTable";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -97,9 +96,7 @@ export const UserTable = () => {
     {
       accessorFn: (row) => `${row.firstName} ${row.lastName}`,
       id: "name",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Name" />
-      ),
+      header: "Name",
       cell: ({ row }) => `${row.original.firstName} ${row.original.lastName}`,
     },
     {
@@ -123,6 +120,7 @@ export const UserTable = () => {
         </Badge>
       ),
       meta: {
+        filterLabel: "Role",
         filterOptions: roleOptions,
         filterFn: multiSelectFilterFn,
       },

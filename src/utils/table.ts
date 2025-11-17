@@ -7,7 +7,13 @@ export const multiSelectFilterFn = <TData>(
   value: any
 ) => {
   if (!value || value.length === 0) return true;
-  return value.includes(row.getValue(columnId));
+
+  const cellValue = row.getValue(columnId);
+
+  return value.some(
+    (filterValue: any) =>
+      String(cellValue).toLowerCase() === String(filterValue).toLowerCase()
+  );
 };
 
 export const generateFilterOptions = <T>(
@@ -16,6 +22,7 @@ export const generateFilterOptions = <T>(
   options?: {
     sort?: boolean;
     removeEmpty?: boolean;
+    normalize?: (value: string) => string; // Add this
   }
 ) => {
   const uniqueValues = new Map();
@@ -25,9 +32,13 @@ export const generateFilterOptions = <T>(
     if (value !== undefined && value !== null) {
       if (options?.removeEmpty && value === "") return;
 
-      uniqueValues.set(value, {
-        label: String(value),
-        value: value,
+      const normalizedKey = options?.normalize
+        ? options.normalize(String(value))
+        : String(value);
+
+      uniqueValues.set(normalizedKey, {
+        label: String(value), // Keep original for display
+        value: normalizedKey,
       });
     }
   });
