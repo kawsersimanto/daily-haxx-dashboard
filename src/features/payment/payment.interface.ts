@@ -1,3 +1,5 @@
+import { IUser } from "../user/user.interface";
+
 export enum IPaymentStatus {
   COMPLETED = "COMPLETED",
   PENDING = "PENDING",
@@ -23,4 +25,5 @@ export interface IPaymentRecord {
   planId: string;
   stripePriceId: string;
   stripeProductId: string;
+  user: IUser;
 }

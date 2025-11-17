@@ -1,11 +1,17 @@
 import { baseApi } from "@/redux/api/baseApi";
-import { ApiResponse } from "@/types/api";
+import { ApiParams, ApiResponse } from "@/types/api";
 import { IPaymentRecord } from "./payment.interface";
 
 export const paymentApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getPayments: builder.query<ApiResponse<IPaymentRecord[]>, void>({
-      query: () => "/subscription-payments",
+    getPayments: builder.query<
+      ApiResponse<IPaymentRecord[], true>,
+      Partial<ApiParams>
+    >({
+      query: ({ page, limit }) => ({
+        url: `/subscription-payments`,
+        params: { page, limit },
+      }),
       providesTags: ["payments"],
     }),
     getPaymentById: builder.query<IPaymentRecord, string>({

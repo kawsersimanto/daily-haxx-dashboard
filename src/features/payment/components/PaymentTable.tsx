@@ -1,7 +1,6 @@
 "use client";
 
 import { CopyableCell } from "@/components/copyable-cell/CopyableCell";
-import { DataTableColumnHeader } from "@/components/data-table-column-header/DataTableColumnHeader";
 import { DataTable } from "@/components/data-table/DataTable";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,54 +11,73 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  IPaymentRecord,
+  IPaymentStatus,
+} from "@/features/payment/payment.interface";
+import { ApiResponse } from "@/types/api";
 import { handleMutationRequest } from "@/utils/handleMutationRequest";
+import { generateFilterOptions, multiSelectFilterFn } from "@/utils/table";
 import { type ColumnDef } from "@tanstack/react-table";
-import { EyeIcon, MoreHorizontal, PlusCircle, Trash } from "lucide-react";
+import { EyeIcon, MoreHorizontal, Trash } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useDeletePaymentMutation, useGetPaymentsQuery } from "../payment.api";
-import { IPaymentRecord } from "../payment.interface";
 
 export const PaymentTable = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  // const [updatePaymentFn, { isLoading: isUpdatingPayment }] = useUpdatePaymentMutation();
-  const { data } = useGetPaymentsQuery();
+  const { data } = useGetPaymentsQuery({ page, limit });
+  const payments = data?.data?.data || [];
   const [deletePaymentFn] = useDeletePaymentMutation();
 
-  const payments = data?.data || [];
-  const total = payments.length;
-  const totalPages = Math.ceil(total / limit);
-  const paginatedPayments = payments.slice((page - 1) * limit, page * limit);
+  const total = data?.data?.meta?.total ?? 0;
+  const totalPages = data?.data?.meta?.totalPages ?? 0;
+
+  const statusOptions = generateFilterOptions(
+    Object.values(IPaymentStatus),
+    (status) => status,
+    {
+      sort: true,
+      removeEmpty: true,
+    }
+  );
 
   const handleDelete = async (payment: IPaymentRecord) => {
     await handleMutationRequest(deletePaymentFn, payment?.id, {
-      loadingMessage: "Deleting payment...",
-      successMessage: () => "Payment deleted successfully!",
+      loadingMessage: "Deleting Payment",
+      successMessage: (res: ApiResponse<string>) => res?.message,
     });
   };
 
-  const getPaymentStatusBadge = (status: string) => {
-    const statusMap: Record<
-      string,
-      "default" | "destructive" | "secondary" | "outline"
-    > = {
-      completed: "default",
-      pending: "secondary",
-      failed: "destructive",
-      refunded: "outline",
-    };
-    return statusMap[status?.toLowerCase()] || "secondary";
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
   };
 
-  const getActiveStatusBadge = (isActive: boolean) => {
-    return isActive ? "default" : "secondary";
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amount);
   };
 
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return "—";
-    const date = new Date(dateString);
-    return date.toLocaleDateString();
+  const getStatusBadgeVariant = (status: IPaymentStatus) => {
+    switch (status) {
+      case IPaymentStatus.COMPLETED:
+        return "default";
+      case IPaymentStatus.PENDING:
+        return "secondary";
+      case IPaymentStatus.FAILED:
+        return "destructive";
+      case IPaymentStatus.REFUNDED:
+        return "outline";
+      default:
+        return "outline";
+    }
   };
 
   const columns: ColumnDef<IPaymentRecord>[] = [
@@ -82,93 +100,90 @@ export const PaymentTable = () => {
       size: 30,
     },
     {
-      accessorKey: "stripeProductId",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Stripe Product ID" />
-      ),
+      accessorKey: "id",
+      header: "Payment ID",
       cell: ({ row }) => (
-        <CopyableCell value={row.original.stripeProductId}>
-          <span className="font-medium text-xs">
-            {row.original.stripeProductId}
+        <CopyableCell value={row.original.id}>
+          <span className="font-mono text-sm">
+            {row.original.id.slice(0, 15)}...
           </span>
         </CopyableCell>
       ),
     },
     {
-      accessorKey: "userId",
-      header: "User ID",
+      accessorKey: "subscriptionId",
+      header: "Subscription ID",
       cell: ({ row }) => (
-        <CopyableCell value={row.original.userId}>
-          <span className="text-xs">{row.original.userId}</span>
+        <CopyableCell value={row.original.subscriptionId}>
+          <span className="font-mono text-sm">
+            {row.original.subscriptionId.slice(0, 15)}...
+          </span>
         </CopyableCell>
+      ),
+    },
+    {
+      accessorKey: "stripePriceId",
+      header: "Stripe Price ID",
+      cell: ({ row }) => (
+        <CopyableCell value={row.original.stripePriceId}>
+          <span className="font-mono text-sm">
+            {row.original.stripePriceId.slice(0, 15)}...
+          </span>
+        </CopyableCell>
+      ),
+    },
+    {
+      accessorFn: ({ user }) => `${user.firstName} ${user.lastName}`,
+      header: "Name",
+      cell: ({ row }) => (
+        <div>
+          {row.original.user.firstName} {row.original.user.lastName}
+        </div>
       ),
     },
     {
       accessorKey: "amount",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Amount" />
-      ),
-      cell: ({ row }) => `$${row.original.amount.toFixed(2)}`,
-    },
-    {
-      accessorKey: "paymentStatus",
-      header: "Payment Status",
-      cell: ({ row }) => (
-        <Badge variant={getPaymentStatusBadge(row.original.paymentStatus)}>
-          {row.original.paymentStatus}
-        </Badge>
-      ),
-    },
-    {
-      accessorKey: "paymentMethodId",
-      header: "Payment Method ID",
-      cell: ({ row }) => (
-        <CopyableCell value={row.original.paymentMethodId}>
-          <span className="capitalize text-xs">
-            {row.original.paymentMethodId}
-          </span>
-        </CopyableCell>
-      ),
-    },
-    {
-      accessorKey: "isActive",
-      header: "Status",
-      cell: ({ row }) => (
-        <Badge variant={getActiveStatusBadge(row.original.isActive)}>
-          {row.original.isActive ? "Active" : "Inactive"}
-        </Badge>
-      ),
+      header: "Amount",
+      cell: ({ row }) => formatCurrency(row.original.amount),
     },
     {
       accessorKey: "createdAt",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Created Date" />
-      ),
+      header: "Created",
       cell: ({ row }) => formatDate(row.original.createdAt),
     },
     {
       accessorKey: "endDate",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="End Date" />
-      ),
-      cell: ({ row }) => formatDate(row.original.endDate),
+      header: "End Date",
+      cell: ({ row }) =>
+        row.original.endDate ? formatDate(row.original.endDate) : "-",
     },
     {
       accessorKey: "canceledAt",
       header: "Canceled Date",
-      cell: ({ row }) => formatDate(row.original.canceledAt),
+      cell: ({ row }) =>
+        row.original.canceledAt ? formatDate(row.original.canceledAt) : "-",
     },
     {
       accessorKey: "refundedAmount",
       header: "Refunded Amount",
       cell: ({ row }) =>
-        row.original.refundedAmount !== null ? (
-          `$${row.original.refundedAmount.toFixed(2)}`
-        ) : (
-          <Badge variant="outline" className="text-xs">
-            None
-          </Badge>
-        ),
+        row.original.refundedAmount
+          ? formatCurrency(row.original.refundedAmount)
+          : "-",
+    },
+    {
+      accessorKey: "paymentStatus",
+      header: "Status",
+      cell: ({ row }) => (
+        <Badge variant={getStatusBadgeVariant(row.original.paymentStatus)}>
+          {row.original.paymentStatus}
+        </Badge>
+      ),
+      meta: {
+        filterLabel: "Payment Status",
+        filterOptions: statusOptions,
+        filterFn: multiSelectFilterFn,
+      },
     },
     {
       id: "actions",
@@ -183,13 +198,10 @@ export const PaymentTable = () => {
             <DropdownMenuItem asChild>
               <Link href={`payments/${row?.original?.id}`}>
                 <EyeIcon className="text-inherit" />
-                View Details
+                Preview
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => handleDelete(row.original)}
-              // disabled={isUpdatingPayment}
-            >
+            <DropdownMenuItem onClick={() => handleDelete(row.original)}>
               <Trash className="text-inherit" />
               Delete
             </DropdownMenuItem>
@@ -200,13 +212,12 @@ export const PaymentTable = () => {
   ];
 
   const handleDeleteMany = (rows: IPaymentRecord[], ids: string[]) => {
-    console.log("Deleting multiple payments:", ids, rows);
-    // Implement bulk delete if needed
+    console.log("Deleting:", ids, rows);
   };
 
   return (
     <DataTable
-      data={paginatedPayments}
+      data={payments}
       columns={columns}
       total={total}
       page={page}
@@ -218,13 +229,6 @@ export const PaymentTable = () => {
         setLimit(newLimit);
         setPage(1);
       }}
-      renderActions={() => (
-        <Button variant="outline" size="sm" asChild>
-          <Link href="/payments/create">
-            <PlusCircle /> Add Payment
-          </Link>
-        </Button>
-      )}
     />
   );
 };
