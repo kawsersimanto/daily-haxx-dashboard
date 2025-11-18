@@ -1,11 +1,17 @@
-import { IArticleCategory } from "@/features/article/article.interface";
 import { baseApi } from "@/redux/api/baseApi";
-import { ApiResponse } from "@/types/api";
+import { ApiParams, ApiResponse } from "@/types/api";
+import { IArticleCategory } from "./article-category.interface";
 
 export const articleCategoryApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getCategories: builder.query<ApiResponse<IArticleCategory[]>, void>({
-      query: () => "/article-category",
+    getCategories: builder.query<
+      ApiResponse<IArticleCategory[], true>,
+      Partial<ApiParams>
+    >({
+      query: ({ page, limit, searchTerm }) => ({
+        url: "/article-category",
+        params: { page, limit, searchTerm },
+      }),
       providesTags: ["articleCategories"],
     }),
     getCategoryById: builder.query<ApiResponse<IArticleCategory>, string>({

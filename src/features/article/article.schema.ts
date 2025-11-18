@@ -15,9 +15,4 @@ export const ArticleSchema = z.object({
   companyName: z.string().min(1, "Company name is required"),
 });
 
-export const ArticleCategorySchema = z.object({
-  name: z.string().min(1, "Category name is required"),
-});
-
 export type ArticleSchemaType = z.infer<typeof ArticleSchema>;
-export type ArticleCategorySchemaType = z.infer<typeof ArticleCategorySchema>;

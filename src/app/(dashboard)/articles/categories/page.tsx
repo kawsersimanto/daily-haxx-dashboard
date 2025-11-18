@@ -1,4 +1,4 @@
-import { CategoryTable } from "@/features/article/components/CategoriesTable";
+import { CategoryTable } from "@/features/article-category/components/CategoriesTable";
 
 const ArticleCategoryPage = () => {
   return <CategoryTable />;

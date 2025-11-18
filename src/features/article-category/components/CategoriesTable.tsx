@@ -1,6 +1,5 @@
 "use client";
 
-import { DataTableColumnHeader } from "@/components/data-table-column-header/DataTableColumnHeader";
 import { DataTable } from "@/components/data-table/DataTable";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -10,39 +9,43 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { IArticleCategory } from "@/features/article/article.interface";
-import {
-  useDeleteCategoryMutation,
-  useGetCategoriesQuery,
-} from "@/features/article/articleCategory.api";
+
+import { useDebounce } from "@/hooks/useDebounce";
 import { ApiResponse } from "@/types/api";
 import { formatDate } from "@/utils/date";
 import { handleMutationRequest } from "@/utils/handleMutationRequest";
-import { generateFilterOptions, multiSelectFilterFn } from "@/utils/table";
 import { type ColumnDef } from "@tanstack/react-table";
 import { Edit, MoreHorizontal, PlusCircle, Trash } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import {
+  useDeleteCategoryMutation,
+  useGetCategoriesQuery,
+} from "../article-category.api";
+import { IArticleCategory } from "../article-category.interface";
 
 export const CategoryTable = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const { data } = useGetCategoriesQuery();
-  const categories = data?.data || [];
+  const [searchInput, setSearchInput] = useState("");
+  const debouncedSearch = useDebounce(searchInput, 500);
+
+  const { data } = useGetCategoriesQuery({
+    page,
+    limit,
+    searchTerm: debouncedSearch,
+  });
+  const categories = data?.data?.data || [];
   const [deleteCategoryFn, { isLoading: isDeleting }] =
     useDeleteCategoryMutation();
 
-  const total = 0;
-  const totalPages = 0;
+  const total = data?.data?.meta?.total ?? 0;
+  const totalPages = data?.data?.meta?.totalPages ?? 0;
 
-  const categoryOptions = generateFilterOptions(
-    categories,
-    (category) => category.name,
-    {
-      sort: true,
-      removeEmpty: true,
-    }
-  );
+  const handleSearch = (query: string) => {
+    setSearchInput(query);
+    setPage(1);
+  };
 
   const handleDelete = async (category: IArticleCategory) => {
     await handleMutationRequest(deleteCategoryFn, category?.id, {
@@ -76,14 +79,7 @@ export const CategoryTable = () => {
     },
     {
       accessorKey: "name",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Name" />
-      ),
-
-      meta: {
-        filterOptions: categoryOptions,
-      },
-      filterFn: multiSelectFilterFn,
+      header: "Name",
     },
     {
       accessorKey: "slug",
@@ -133,6 +129,9 @@ export const CategoryTable = () => {
       total={total}
       page={page}
       limit={limit}
+      searchMode="server"
+      onSearch={handleSearch}
+      searchQuery={searchInput}
       totalPages={totalPages}
       onPageChange={setPage}
       onDeleteSelected={handleDeleteMany}

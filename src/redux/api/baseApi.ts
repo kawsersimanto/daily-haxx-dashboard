@@ -17,6 +17,7 @@ export const baseApi = createApi({
     },
   }),
   tagTypes: [
+    "article-category",
     "articles",
     "articleCategories",
     "users",

@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { CategoryEditForm } from "@/features/article/components/CategoryEditForm";
+import { CategoryEditForm } from "@/features/article-category/components/CategoryEditForm";
 
 const CategoryEdit = async ({
   params,

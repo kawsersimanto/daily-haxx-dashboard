@@ -25,6 +25,8 @@ export const generateFilterOptions = <T>(
     normalize?: (value: string) => string; // Add this
   }
 ) => {
+  if (!Array.isArray(data)) return [];
+
   const uniqueValues = new Map();
 
   data.forEach((item) => {

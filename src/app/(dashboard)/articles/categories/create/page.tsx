@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { CreateCategoryForm } from "@/features/article/components/CreateCategoryForm";
+import { CreateCategoryForm } from "@/features/article-category/components/CreateCategoryForm";
 
 const CreateCategories = () => {
   return (

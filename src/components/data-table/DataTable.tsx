@@ -29,7 +29,7 @@ import {
   type PaginationState,
 } from "@tanstack/react-table";
 import { Download, Search, Trash } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { DataTablePagination } from "../data-table-pagination/DataTablePagination";
 
 export interface DataTableProps<T extends { id: string }> {
@@ -37,6 +37,8 @@ export interface DataTableProps<T extends { id: string }> {
   columns: ColumnDef<T>[];
   // Pagination mode: 'server' or 'client'
   paginationMode?: "server" | "client";
+  // Search mode: 'server' or 'client'
+  searchMode?: "server" | "client";
   // Server-side pagination props
   total?: number;
   page?: number;
@@ -44,6 +46,9 @@ export interface DataTableProps<T extends { id: string }> {
   totalPages?: number;
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (limit: number) => void;
+  // Server-side search props
+  onSearch?: (query: string) => void;
+  searchQuery?: string;
   // Common props
   csvFileName?: string;
   onDeleteSelected?: (rows: T[], ids: string[]) => void;
@@ -57,17 +62,25 @@ export const DataTable = <T extends { id: string }>({
   data,
   columns,
   paginationMode = "server",
+  searchMode = "client",
   total,
   page = 1,
   limit = 10,
   totalPages,
   onPageChange,
   onPageSizeChange,
+  onSearch,
+  searchQuery = "",
   csvFileName = "data.csv",
   onDeleteSelected,
   renderActions,
 }: DataTableProps<T>) => {
-  const [globalFilter, setGlobalFilter] = useState("");
+  const isServerSidePagination = paginationMode === "server";
+  const isServerSideSearch = searchMode === "server";
+
+  const [globalFilter, setGlobalFilter] = useState(
+    isServerSideSearch ? searchQuery : ""
+  );
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
 
@@ -77,7 +90,19 @@ export const DataTable = <T extends { id: string }>({
     pageSize: limit,
   });
 
-  const isServerSide = paginationMode === "server";
+  // Search handler for server-side and client-side search
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      if (isServerSideSearch) {
+        if (onSearch) {
+          onSearch(value);
+        }
+      } else {
+        setGlobalFilter(value);
+      }
+    },
+    [isServerSideSearch, onSearch]
+  );
 
   const table = useReactTable<T>({
     data,
@@ -85,10 +110,13 @@ export const DataTable = <T extends { id: string }>({
     enableColumnResizing: true,
     columnResizeMode: "onChange",
     getCoreRowModel: getCoreRowModel<T>(),
-    getFilteredRowModel: getFilteredRowModel<T>(),
+    // Only apply client-side filtering if not using server-side search
+    ...(isServerSideSearch
+      ? {}
+      : { getFilteredRowModel: getFilteredRowModel<T>() }),
 
     // Pagination configuration based on mode
-    ...(isServerSide
+    ...(isServerSidePagination
       ? {
           manualPagination: true,
           pageCount: totalPages || Math.ceil((total || 0) / limit),
@@ -99,13 +127,14 @@ export const DataTable = <T extends { id: string }>({
         }),
 
     onRowSelectionChange: setRowSelection,
-    onGlobalFilterChange: setGlobalFilter,
+    onGlobalFilterChange: handleSearchChange,
     onColumnFiltersChange: setColumnFilters,
     state: {
       rowSelection,
-      globalFilter,
+      // Only apply globalFilter state if client-side search
+      ...(isServerSideSearch ? {} : { globalFilter }),
       columnFilters,
-      ...(isServerSide ? {} : { pagination }),
+      ...(isServerSidePagination ? {} : { pagination }),
     },
   });
 
@@ -131,7 +160,7 @@ export const DataTable = <T extends { id: string }>({
   };
 
   // Determine pagination props based on mode
-  const paginationProps = isServerSide
+  const paginationProps = isServerSidePagination
     ? {
         page,
         limit,
@@ -156,8 +185,9 @@ export const DataTable = <T extends { id: string }>({
         <InputGroup className="max-w-[300px]">
           <InputGroupInput
             placeholder="Search"
-            value={globalFilter}
-            onChange={(e) => setGlobalFilter(e.target.value)}
+            // value={isServerSideSearch ? searchQuery : globalFilter}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            defaultValue={isServerSideSearch ? searchQuery : globalFilter}
           />
           <InputGroupAddon>
             <Search />
@@ -240,7 +270,7 @@ export const DataTable = <T extends { id: string }>({
       </div>
 
       {/* Pagination - conditionally render based on mode */}
-      {isServerSide ? (
+      {isServerSidePagination ? (
         <TablePagination {...paginationProps} visibleCount={visibleCount} />
       ) : (
         <DataTablePagination table={table} />

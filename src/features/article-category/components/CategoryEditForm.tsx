@@ -11,20 +11,20 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import {
-  ArticleCategorySchema,
-  ArticleCategorySchemaType,
-} from "@/features/article/article.schema";
-import {
-  useGetCategoryByIdQuery,
-  useUpdateCategoryMutation,
-} from "@/features/article/articleCategory.api";
 import { handleApiError } from "@/utils/handleApiError";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import {
+  useGetCategoryByIdQuery,
+  useUpdateCategoryMutation,
+} from "../article-category.api";
+import {
+  ArticleCategorySchema,
+  ArticleCategorySchemaType,
+} from "../article-category.schema";
 
 export const CategoryEditForm = ({ id }: { id: string }) => {
   const router = useRouter();

@@ -1,12 +1,5 @@
+import { IArticleCategory } from "@/features/article-category/article-category.interface";
 import { IUser } from "@/features/user/user.interface";
-
-export interface IArticleCategory {
-  id: string;
-  name: string;
-  slug: string;
-  createdAt: string;
-  updatedAt: string;
-}
 
 export interface IArticle {
   id: string;

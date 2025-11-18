@@ -11,16 +11,16 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import {
-  ArticleCategorySchema,
-  ArticleCategorySchemaType,
-} from "@/features/article/article.schema";
-import { useCreateCategoryMutation } from "@/features/article/articleCategory.api";
 import { ApiResponse } from "@/types/api";
 import { handleMutationRequest } from "@/utils/handleMutationRequest";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { useCreateCategoryMutation } from "../article-category.api";
+import {
+  ArticleCategorySchema,
+  ArticleCategorySchemaType,
+} from "../article-category.schema";
 
 export const CreateCategoryForm = () => {
   const router = useRouter();
