@@ -5,27 +5,14 @@ import { Badge } from "@/components/ui/badge";
 import { CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useGetPaymentByIdQuery } from "../payment.api";
+import { getStatusColor } from "../payment.utils";
+import { PaymentSkeleton } from "./PaymentSkeleton";
 
 export const Payment = ({ id }: { id: string }) => {
   const { data, isLoading } = useGetPaymentByIdQuery(id);
   const payment = data?.data;
 
-  if (isLoading) return "Loading..";
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "COMPLETED":
-        return "default";
-      case "PENDING":
-        return "secondary";
-      case "FAILED":
-        return "destructive";
-      case "REFUNDED":
-        return "outline";
-      default:
-        return "secondary";
-    }
-  };
+  if (isLoading) return <PaymentSkeleton />;
 
   return (
     <div>

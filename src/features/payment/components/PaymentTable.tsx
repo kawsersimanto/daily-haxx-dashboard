@@ -16,6 +16,7 @@ import {
   IPaymentStatus,
 } from "@/features/payment/payment.interface";
 import { ApiResponse } from "@/types/api";
+import { formatDate } from "@/utils/date";
 import { handleMutationRequest } from "@/utils/handleMutationRequest";
 import { generateFilterOptions, multiSelectFilterFn } from "@/utils/table";
 import { type ColumnDef } from "@tanstack/react-table";
@@ -23,6 +24,7 @@ import { EyeIcon, MoreHorizontal, Trash } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useDeletePaymentMutation, useGetPaymentsQuery } from "../payment.api";
+import { formatCurrency, getStatusColor } from "../payment.utils";
 
 export const PaymentTable = () => {
   const [page, setPage] = useState(1);
@@ -48,36 +50,6 @@ export const PaymentTable = () => {
       loadingMessage: "Deleting Payment",
       successMessage: (res: ApiResponse<string>) => res?.message,
     });
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount);
-  };
-
-  const getStatusBadgeVariant = (status: IPaymentStatus) => {
-    switch (status) {
-      case IPaymentStatus.COMPLETED:
-        return "default";
-      case IPaymentStatus.PENDING:
-        return "secondary";
-      case IPaymentStatus.FAILED:
-        return "destructive";
-      case IPaymentStatus.REFUNDED:
-        return "outline";
-      default:
-        return "outline";
-    }
   };
 
   const columns: ColumnDef<IPaymentRecord>[] = [
@@ -175,7 +147,7 @@ export const PaymentTable = () => {
       accessorKey: "paymentStatus",
       header: "Status",
       cell: ({ row }) => (
-        <Badge variant={getStatusBadgeVariant(row.original.paymentStatus)}>
+        <Badge variant={getStatusColor(row.original.paymentStatus)}>
           {row.original.paymentStatus}
         </Badge>
       ),
