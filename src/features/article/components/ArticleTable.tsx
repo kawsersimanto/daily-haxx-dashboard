@@ -225,7 +225,7 @@ export const ArticleTable = () => {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href={`/articles/edit/${row.original.id}`}>
+              <Link href={`/articles/${row.original.id}/edit`}>
                 <Edit className="text-inherit" />
                 Edit
               </Link>

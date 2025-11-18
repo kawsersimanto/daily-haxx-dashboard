@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { Editor } from "@/components/blocks/editor-md/editor";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -27,35 +26,12 @@ import {
   useUploadSingleImageMutation,
 } from "@/features/image/image.api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SerializedEditorState } from "lexical";
 import { useEffect } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { toast } from "sonner";
 import { useGetArticleByIdQuery } from "../article.api";
-import type { BodyType } from "../article.schema";
 import { ArticleSchema, ArticleSchemaType } from "../article.schema";
 import { ArticleFormSkeleton } from "./ArticleFormSkeleton";
-
-/** initial fallback editor state (use your existing initialValue) */
-const initialValue: BodyType = {
-  root: {
-    children: [
-      {
-        children: [],
-        direction: "ltr",
-        format: "",
-        indent: 0,
-        type: "paragraph",
-        version: 1,
-      },
-    ],
-    direction: "ltr",
-    format: "",
-    indent: 0,
-    type: "root",
-    version: 1,
-  },
-} as unknown as SerializedEditorState;
 
 export const ArticleEditForm = ({ id }: { id: string }) => {
   const { profile } = useAuth();
@@ -82,30 +58,8 @@ export const ArticleEditForm = ({ id }: { id: string }) => {
       companyName: "",
       coverImage: "",
       userId: "",
-      body: initialValue, // start with initialValue
     },
   });
-
-  // helper: parse article.body whether it's stored as object or JSON string
-  function parseBody(raw: any): BodyType {
-    if (!raw) return initialValue;
-    if (typeof raw === "string") {
-      try {
-        const parsed = JSON.parse(raw);
-        return parsed as BodyType;
-      } catch (e) {
-        console.warn(
-          "Failed to parse article.body JSON, falling back to initialValue",
-          e
-        );
-        return initialValue;
-      }
-    }
-    // assume it's already the serialized object
-    return raw as BodyType;
-  }
-
-  console.log(parseBody(article?.body));
 
   useEffect(() => {
     if (!profile || !article) return;
@@ -116,7 +70,6 @@ export const ArticleEditForm = ({ id }: { id: string }) => {
       companyName: article?.companyName || "",
       coverImage: article?.coverImage || "",
       userId: profile?.id || "",
-      body: parseBody(article?.body) || "",
     });
   }, [form, profile, article]);
 
@@ -186,26 +139,6 @@ export const ArticleEditForm = ({ id }: { id: string }) => {
               <FormLabel>Company</FormLabel>
               <FormControl>
                 <Input placeholder="ex. Tedex" type="text" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* BODY field: we pass the parsed object into editorSerializedState and update the form on change */}
-        <FormField
-          control={form.control}
-          name="body"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Body</FormLabel>
-              <FormControl>
-                <Editor
-                  editorSerializedState={
-                    (field.value as BodyType) || initialValue
-                  }
-                  onSerializedChange={(value) => field.onChange(value)}
-                />
               </FormControl>
               <FormMessage />
             </FormItem>
