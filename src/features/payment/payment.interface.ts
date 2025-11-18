@@ -1,3 +1,4 @@
+import { ISubscription } from "../subscription/subscription.interface";
 import { IUser } from "../user/user.interface";
 
 export enum IPaymentStatus {
@@ -26,4 +27,5 @@ export interface IPaymentRecord {
   stripePriceId: string;
   stripeProductId: string;
   user: IUser;
+  plan: ISubscription | null;
 }

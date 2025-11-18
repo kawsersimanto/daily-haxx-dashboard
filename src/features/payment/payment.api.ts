@@ -14,7 +14,7 @@ export const paymentApi = baseApi.injectEndpoints({
       }),
       providesTags: ["payments"],
     }),
-    getPaymentById: builder.query<IPaymentRecord, string>({
+    getPaymentById: builder.query<ApiResponse<IPaymentRecord>, string>({
       query: (id) => `/subscription-payments/${id}`,
     }),
     createPayment: builder.mutation<IPaymentRecord, Partial<IPaymentRecord>>({
