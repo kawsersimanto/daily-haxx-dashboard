@@ -1,6 +1,5 @@
 "use client";
 
-import { DataTableColumnHeader } from "@/components/data-table-column-header/DataTableColumnHeader";
 import { DataTable } from "@/components/data-table/DataTable";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -127,9 +126,7 @@ export const ArticleTable = () => {
     },
     {
       accessorKey: "title",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Title" />
-      ),
+      header: "Title",
       cell: ({ row }) => {
         return (
           <div className="flex gap-2 w-[400px] items-center">
