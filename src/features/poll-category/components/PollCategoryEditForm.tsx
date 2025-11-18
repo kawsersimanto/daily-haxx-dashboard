@@ -17,11 +17,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { PollCategorySchema, PollCategorySchemaType } from "../poll.schema";
+import {
+  PollCategorySchema,
+  PollCategorySchemaType,
+} from "../../poll/poll.schema";
 import {
   useGetPollCategoryByIdQuery,
   useUpdatePollCategoryMutation,
-} from "../pollCategory.api";
+} from "../poll-category.api";
 
 export const PollCategoryEditForm = ({ id }: { id: string }) => {
   const router = useRouter();

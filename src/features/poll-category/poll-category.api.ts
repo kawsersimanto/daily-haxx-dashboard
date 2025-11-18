@@ -1,6 +1,6 @@
 import { baseApi } from "@/redux/api/baseApi";
 import { ApiParams, ApiResponse } from "@/types/api";
-import { IPollCategories } from "./poll.interface";
+import { IPollCategories } from "./poll-category.interface";
 
 export const pollApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -8,7 +8,10 @@ export const pollApi = baseApi.injectEndpoints({
       ApiResponse<IPollCategories[], true>,
       Partial<ApiParams>
     >({
-      query: ({ page, limit }) => `/poll-category?page=${page}&limit=${limit}`,
+      query: ({ page, limit, searchTerm }) => ({
+        url: `/poll-category`,
+        params: { page, limit, searchTerm },
+      }),
       providesTags: ["pollCategories"],
       keepUnusedDataFor: 60,
     }),

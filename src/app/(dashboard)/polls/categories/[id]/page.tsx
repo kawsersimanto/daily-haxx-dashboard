@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { PollCategoryEditForm } from "@/features/poll/components/PollCategoryEditForm";
+import { PollCategoryEditForm } from "@/features/poll-category/components/PollCategoryEditForm";
 
 const PollEdit = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;

@@ -2,6 +2,7 @@ import { articleReducer } from "@/features/article/store/article.slice";
 import { authReducer } from "@/features/auth/store/auth.slice";
 import { userReducer } from "@/features/user/store/user.slice";
 import { baseApi } from "@/redux/api/baseApi";
+import { pollCategoryReducer } from "@/features/poll-category/store/poll-category.slice";
 import { articleCategoryReducer } from "@/features/article-category/store/article-category.slice";
 import { paymentReducer } from "@/features/payment/store/payment.slice";
 import { subscriptionReducer } from "@/features/subscription/store/subscription.slice";
@@ -28,6 +29,7 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
+  pollCategory: pollCategoryReducer,
   articleCategory: articleCategoryReducer,
   payment: paymentReducer,
   subscription: subscriptionReducer,

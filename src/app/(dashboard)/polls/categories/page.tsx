@@ -1,4 +1,4 @@
-import { PollCategoryTable } from "@/features/poll/components/PollCategoryTable";
+import { PollCategoryTable } from "@/features/poll-category/components/PollCategoryTable";
 
 const PollCategoryPage = () => {
   return <PollCategoryTable />;

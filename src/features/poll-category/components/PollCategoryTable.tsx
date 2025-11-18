@@ -9,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useDebounce } from "@/hooks/useDebounce";
 import { ApiResponse } from "@/types/api";
 import { formatDate } from "@/utils/date";
 import { handleMutationRequest } from "@/utils/handleMutationRequest";
@@ -16,22 +17,33 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { Edit, MoreHorizontal, PlusCircle, Trash } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { IPollCategories } from "../poll.interface";
 import {
   useDeletePollCategoryMutation,
   useGetPollCategoriesQuery,
-} from "../pollCategory.api";
+} from "../poll-category.api";
+import { IPollCategories } from "../poll-category.interface";
 
 export const PollCategoryTable = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const { data } = useGetPollCategoriesQuery({ page, limit });
+  const [searchInput, setSearchInput] = useState("");
+  const debouncedSearch = useDebounce(searchInput, 500);
+  const { data } = useGetPollCategoriesQuery({
+    page,
+    limit,
+    searchTerm: debouncedSearch,
+  });
   const categories = data?.data?.data || [];
   const [deletePollCategoryFn, { isLoading: isDeleting }] =
     useDeletePollCategoryMutation();
 
   const total = data?.data?.meta?.total ?? 0;
   const totalPages = data?.data?.meta?.totalPages ?? 0;
+
+  const handleSearch = (query: string) => {
+    setSearchInput(query);
+    setPage(1);
+  };
 
   const handleDelete = async (category: IPollCategories) => {
     await handleMutationRequest(deletePollCategoryFn, category?.id, {
@@ -116,6 +128,9 @@ export const PollCategoryTable = () => {
       total={total}
       page={page}
       limit={limit}
+      searchMode="server"
+      onSearch={handleSearch}
+      searchQuery={searchInput}
       totalPages={totalPages}
       onPageChange={setPage}
       onDeleteSelected={handleDeleteMany}

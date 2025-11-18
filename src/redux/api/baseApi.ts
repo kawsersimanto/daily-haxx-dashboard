@@ -17,6 +17,7 @@ export const baseApi = createApi({
     },
   }),
   tagTypes: [
+    "poll-category",
     "article-category",
     "articles",
     "articleCategories",
