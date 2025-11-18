@@ -35,12 +35,12 @@ export const PollCategoryEditForm = ({ id }: { id: string }) => {
     },
   });
 
-  console.log(data?.data?.name);
+  console.log(data?.name);
 
   useEffect(() => {
-    if (data?.data) {
+    if (data) {
       form.reset({
-        name: data?.data?.name,
+        name: data?.name,
       });
     }
   }, [data, form]);

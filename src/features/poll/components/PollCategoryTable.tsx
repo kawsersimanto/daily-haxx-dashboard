@@ -1,6 +1,5 @@
 "use client";
 
-import { DataTableColumnHeader } from "@/components/data-table-column-header/DataTableColumnHeader";
 import { DataTable } from "@/components/data-table/DataTable";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -13,7 +12,6 @@ import {
 import { ApiResponse } from "@/types/api";
 import { formatDate } from "@/utils/date";
 import { handleMutationRequest } from "@/utils/handleMutationRequest";
-import { generateFilterOptions, multiSelectFilterFn } from "@/utils/table";
 import { type ColumnDef } from "@tanstack/react-table";
 import { Edit, MoreHorizontal, PlusCircle, Trash } from "lucide-react";
 import Link from "next/link";
@@ -28,22 +26,12 @@ export const PollCategoryTable = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const { data } = useGetPollCategoriesQuery({ page, limit });
-  // const categories = data?.data?.data || [];
-  const categories = data?.data || [];
+  const categories = data?.data?.data || [];
   const [deletePollCategoryFn, { isLoading: isDeleting }] =
     useDeletePollCategoryMutation();
 
-  const total = 0;
-  const totalPages = 0;
-
-  const pollCategoryOptions = generateFilterOptions(
-    categories,
-    (category) => category.name,
-    {
-      sort: true,
-      removeEmpty: true,
-    }
-  );
+  const total = data?.data?.meta?.total ?? 0;
+  const totalPages = data?.data?.meta?.totalPages ?? 0;
 
   const handleDelete = async (category: IPollCategories) => {
     await handleMutationRequest(deletePollCategoryFn, category?.id, {
@@ -77,14 +65,7 @@ export const PollCategoryTable = () => {
     },
     {
       accessorKey: "name",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Name" />
-      ),
-
-      meta: {
-        filterOptions: pollCategoryOptions,
-      },
-      filterFn: multiSelectFilterFn,
+      header: "Name",
     },
     {
       accessorKey: "slug",
