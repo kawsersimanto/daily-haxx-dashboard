@@ -15,7 +15,7 @@ export const pollApi = baseApi.injectEndpoints({
       providesTags: ["pollCategories"],
       keepUnusedDataFor: 60,
     }),
-    getPollCategoryById: builder.query<IPollCategories, string>({
+    getPollCategoryById: builder.query<ApiResponse<IPollCategories>, string>({
       query: (id) => `/poll-category/${id}`,
     }),
     createPollCategory: builder.mutation<

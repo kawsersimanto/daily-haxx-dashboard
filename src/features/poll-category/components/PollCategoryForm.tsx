@@ -11,13 +11,16 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import { useCreatePollCategoryMutation } from "@/features/poll-category/poll-category.api";
 import { ApiResponse } from "@/types/api";
 import { handleMutationRequest } from "@/utils/handleMutationRequest";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { PollCategorySchema, PollCategorySchemaType } from "../poll.schema";
-import { useCreatePollCategoryMutation } from "../pollCategory.api";
+import {
+  PollCategorySchema,
+  PollCategorySchemaType,
+} from "../../poll/poll.schema";
 
 export const PollCategoryForm = () => {
   const router = useRouter();
@@ -47,7 +50,7 @@ export const PollCategoryForm = () => {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Category Name</FormLabel>
+              <FormLabel>Name</FormLabel>
               <FormControl>
                 <Input placeholder="Pharmaceuticals" type="text" {...field} />
               </FormControl>

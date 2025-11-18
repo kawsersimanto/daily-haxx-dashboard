@@ -38,15 +38,15 @@ export const PollCategoryEditForm = ({ id }: { id: string }) => {
     },
   });
 
-  console.log(data?.name);
+  const pollCategory = data?.data;
 
   useEffect(() => {
-    if (data) {
+    if (pollCategory) {
       form.reset({
-        name: data?.name,
+        name: pollCategory?.name,
       });
     }
-  }, [data, form]);
+  }, [pollCategory, form]);
 
   const onSubmit = async (values: PollCategorySchemaType) => {
     await handleMutationRequest(
@@ -85,7 +85,7 @@ export const PollCategoryEditForm = ({ id }: { id: string }) => {
         />
         <Button type="submit" disabled={isLoading || isLoadingCategory}>
           {isLoading && <Spinner />}
-          {isLoading ? "Submitting..." : "Submit"}
+          {isLoading ? "Saving changes..." : "Save Changes"}
         </Button>
       </form>
     </Form>

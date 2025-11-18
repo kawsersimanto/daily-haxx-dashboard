@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { PollCategoryForm } from "@/features/poll/components/PollCategoryForm";
+import { PollCategoryForm } from "@/features/poll-category/components/PollCategoryForm";
 
 const CreatePoll = () => {
   return (
