@@ -3,13 +3,13 @@ import { ArticleDetailsCard } from "@/features/article/components/ArticleDetails
 const ArticleDetailsPage = async ({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ id: string }>;
 }) => {
-  const { slug } = await params;
+  const { id } = await params;
 
   return (
     <div className="max-w-3xl mx-auto">
-      <ArticleDetailsCard slug={slug} />
+      <ArticleDetailsCard id={id} />
     </div>
   );
 };

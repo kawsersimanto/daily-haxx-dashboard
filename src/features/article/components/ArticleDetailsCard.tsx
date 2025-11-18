@@ -4,11 +4,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { formatDate } from "@/utils/date";
 import { UserCircle } from "lucide-react";
 import Image from "next/image";
-import { useGetArticleBySlugQuery } from "../article.api";
+import { useGetArticleByIdQuery } from "../article.api";
 import { ArticleDetailsCardSkeleton } from "./ArticleDetailsCardSkeleton";
 
-export const ArticleDetailsCard = ({ slug }: { slug: string }) => {
-  const { data, isLoading, isError } = useGetArticleBySlugQuery(slug);
+export const ArticleDetailsCard = ({ id }: { id: string }) => {
+  const { data, isLoading, isError } = useGetArticleByIdQuery(id);
   const article = data?.data;
 
   return (
