@@ -18,30 +18,47 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UploadImage } from "@/components/upload-image/UploadImage";
+import { useGetCategoriesQuery } from "@/features/article-category/article-category.api";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import {
   useDeleteImageByUrlMutation,
   useUploadSingleImageMutation,
 } from "@/features/image/image.api";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { ArticleSchema, ArticleSchemaType } from "../article.schema";
+import { ArticleFormSkeleton } from "./ArticleFormSkeleton";
 
 export const ArticleForm = () => {
+  const { profile } = useAuth();
+  const { data: categoriesData, isLoading: isLoadingCategories } =
+    useGetCategoriesQuery({ page: 1, limit: 50 });
   const uploadMutation = useUploadSingleImageMutation();
   const deleteMutation = useDeleteImageByUrlMutation();
+
+  const categories = categoriesData?.data?.data;
 
   const form = useForm<ArticleSchemaType>({
     resolver: zodResolver(ArticleSchema),
     defaultValues: {
       title: "",
       body: "",
-      categoryId: "asdfasdf",
+      categoryId: "",
       companyName: "",
       coverImage: "",
-      userId: "aasdf",
+      userId: "",
     },
   });
+
+  useEffect(() => {
+    if (!profile) return;
+
+    form.reset({
+      userId: profile?.id || "",
+    });
+  }, [form, profile]);
 
   const onSubmit = (values: ArticleSchemaType) => {
     try {
@@ -57,6 +74,8 @@ export const ArticleForm = () => {
     }
   };
 
+  if (isLoadingCategories) return <ArticleFormSkeleton />;
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 py-5">
@@ -67,7 +86,11 @@ export const ArticleForm = () => {
             <FormItem>
               <FormLabel>Title</FormLabel>
               <FormControl>
-                <Input placeholder="Tedex Pharmacy" type="text" {...field} />
+                <Input
+                  placeholder="ex. Tedex Pharmacy"
+                  type="text"
+                  {...field}
+                />
               </FormControl>
 
               <FormMessage />
@@ -102,7 +125,7 @@ export const ArticleForm = () => {
             <FormItem>
               <FormLabel>Company</FormLabel>
               <FormControl>
-                <Input placeholder="Tedex" type="text" {...field} />
+                <Input placeholder="ex. Tedex" type="text" {...field} />
               </FormControl>
 
               <FormMessage />
@@ -119,13 +142,15 @@ export const ArticleForm = () => {
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select Cateogry" />
+                    <SelectValue placeholder="Select Category" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="m@example.com">m@example.com</SelectItem>
-                  <SelectItem value="m@google.com">m@google.com</SelectItem>
-                  <SelectItem value="m@support.com">m@support.com</SelectItem>
+                  {categories?.map((category) => (
+                    <SelectItem key={category?.id} value={category?.id}>
+                      {category?.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
 

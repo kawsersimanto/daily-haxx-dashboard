@@ -1,8 +1,8 @@
 export interface ApiMeta {
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
+  total?: number;
+  page?: number;
+  limit?: number;
+  totalPages?: number;
 }
 
 export type ApiResponse<T, WithMeta extends boolean = false> = {
