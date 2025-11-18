@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useDebounce } from "@/hooks/useDebounce";
 import { ApiResponse } from "@/types/api";
 import { formatDate } from "@/utils/date";
 import { handleMutationRequest } from "@/utils/handleMutationRequest";
@@ -38,13 +39,24 @@ import { IArticle } from "../article.interface";
 export const ArticleTable = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const { data } = useGetArticlesQuery({ page, limit });
+  const [searchInput, setSearchInput] = useState("");
+  const debouncedSearch = useDebounce(searchInput, 500);
+  const { data } = useGetArticlesQuery({
+    page,
+    limit,
+    searchTerm: debouncedSearch,
+  });
   const [deleteArticleFn, { isLoading: isDeletingArticle }] =
     useDeleteArticleMutation();
 
   const articles = data?.data?.data || [];
   const total = data?.data?.meta?.total ?? 0;
   const totalPages = data?.data?.meta?.totalPages ?? 0;
+
+  const handleSearch = (query: string) => {
+    setSearchInput(query);
+    setPage(1);
+  };
 
   const handleDelete = async (article: IArticle) => {
     console.log("delete article:", article.id);
@@ -241,6 +253,9 @@ export const ArticleTable = () => {
       total={total}
       page={page}
       limit={limit}
+      searchMode="server"
+      onSearch={handleSearch}
+      searchQuery={searchInput}
       totalPages={totalPages}
       onPageChange={setPage}
       onDeleteSelected={handleDeleteMany}

@@ -8,7 +8,10 @@ export const articleApi = baseApi.injectEndpoints({
       ApiResponse<IArticle[], true>,
       Partial<ApiParams>
     >({
-      query: ({ page, limit }) => `/articles?page=${page}&limit=${limit}`,
+      query: ({ page, limit, searchTerm }) => ({
+        url: `/articles`,
+        params: { page, limit, searchTerm },
+      }),
       providesTags: ["articles"],
     }),
 
