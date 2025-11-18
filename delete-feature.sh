@@ -1,24 +1,27 @@
 #!/bin/bash
 
 # Usage examples:
-# ./delete-feature.sh featureName              -> deletes entire feature folder
-# ./delete-feature.sh featureName schema       -> deletes only schema file
-# ./delete-feature.sh featureName interface    -> deletes only interface file
-# ./delete-feature.sh featureName slice        -> deletes only slice file
-# ./delete-feature.sh featureName api          -> deletes only api file
-# ./delete-feature.sh featureName hooks        -> deletes hooks folder
-# ./delete-feature.sh featureName components   -> deletes components folder
-# ./delete-feature.sh featureName constants    -> deletes constants file
+# ./delete-feature.sh medicine-brand              -> deletes entire feature folder
+# ./delete-feature.sh medicine-brand schema       -> deletes only schema file
+# ./delete-feature.sh medicine-brand interface    -> deletes only interface file
+# ./delete-feature.sh medicine-brand slice        -> deletes only slice file
+# ./delete-feature.sh medicine-brand api          -> deletes only api file
+# ./delete-feature.sh medicine-brand hooks        -> deletes hooks folder
+# ./delete-feature.sh medicine-brand components   -> deletes components folder
+# ./delete-feature.sh medicine-brand constants    -> deletes constants file
 
 if [ $# -lt 1 ]; then
   echo "Please provide a feature name."
   exit 1
 fi
 
-feature=$(echo "$1" | tr '[:upper:]' '[:lower:]')
-FeaturePascal=$(echo "$feature" | sed -r 's/(^|_)([a-z])/\U\2/g')
-base="src/features/$feature"
+feature_kebab=$(echo "$1" | tr '[:upper:]' '[:lower:]')                  # e.g. medicine-brand
+feature_pascal=$(echo "$feature_kebab" | sed -E 's/(^|-)([a-z])/\U\2/g') # MedicineBrand
+feature_camel=$(echo "$feature_kebab" | sed -E 's/-([a-z])/\U\1/g')      # medicineBrand
+
+base="src/features/$feature_kebab"
 STORE_FILE="src/redux/store.ts"
+BASE_API_FILE="src/redux/api/baseApi.ts"
 
 # --- Helper functions ---
 delete_file() {
@@ -42,14 +45,14 @@ delete_folder() {
 # --- Main deletion logic ---
 if [ $# -eq 1 ]; then
   delete_folder "$base"
-  echo "✅ Entire feature '$feature' deleted."
+  echo "✅ Entire feature '$feature_kebab' deleted."
 else
   case $2 in
-    schema) delete_file "$base/${feature}.schema.ts" ;;
-    interface) delete_file "$base/${feature}.interface.ts" ;;
-    constants) delete_file "$base/${feature}.constants.ts" ;;
-    slice) delete_file "$base/store/${feature}.slice.ts" ;;
-    api) delete_file "$base/${feature}.api.ts" ;;
+    schema) delete_file "$base/${feature_kebab}.schema.ts" ;;
+    interface) delete_file "$base/${feature_kebab}.interface.ts" ;;
+    constants) delete_file "$base/${feature_kebab}.constants.ts" ;;
+    slice) delete_file "$base/store/${feature_kebab}.slice.ts" ;;
+    api) delete_file "$base/${feature_kebab}.api.ts" ;;
     hooks) delete_folder "$base/hooks" ;;
     components) delete_folder "$base/components" ;;
     *)
@@ -64,21 +67,40 @@ if [ -f "$STORE_FILE" ]; then
   echo "🧹 Cleaning up store references in $STORE_FILE..."
 
   # Remove import line for reducer
-  sed -i "/import { ${feature}Reducer }/d" "$STORE_FILE"
+  sed -i "/import { ${feature_camel}Reducer }/d" "$STORE_FILE"
 
   # Remove reducer registration line
-  sed -i "/${feature}: ${feature}Reducer,/d" "$STORE_FILE"
+  sed -i "/${feature_camel}: ${feature_camel}Reducer,/d" "$STORE_FILE"
 
-  # Optional: clean up any empty lines left behind
+  # Remove leftover double blank lines
   sed -i '/^$/N;/^\n$/D' "$STORE_FILE"
+
+  echo "✅ Cleaned up store references."
+else
+  echo "⚠️  store.ts not found, skipping store cleanup."
 fi
 
-# --- Search for leftover usages in project ---
-echo "🔍 Checking for other references of '@/features/$feature'..."
-usages=$(grep -rl "@/features/$feature" src/ 2>/dev/null)
+# --- Clean up tagTypes in baseApi.ts ---
+if [ -f "$BASE_API_FILE" ]; then
+  echo "🧹 Cleaning up tagTypes in baseApi.ts..."
+
+  # Remove the feature tag (e.g. "medicine-brand",)
+  sed -i "/\"${feature_kebab}\"/d" "$BASE_API_FILE"
+
+  # Fix possible trailing commas in tagTypes array
+  sed -i 's/,\s*]/]/' "$BASE_API_FILE"
+
+  echo "✅ Removed tagType \"${feature_kebab}\" from baseApi.ts"
+else
+  echo "⚠️  baseApi.ts not found, skipping tagType cleanup."
+fi
+
+# --- Search for leftover usages ---
+echo "🔍 Checking for other references of '@/features/$feature_kebab'..."
+usages=$(grep -rl "@/features/$feature_kebab" src/ 2>/dev/null)
 
 if [ -n "$usages" ]; then
-  echo "⚠️  Found potential references:"
+  echo "⚠️  Found potential references to clean up manually:"
   echo "$usages"
 else
   echo "✅ No other references found."
